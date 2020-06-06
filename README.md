@@ -7,6 +7,7 @@ You just need to start the REPL once per development session and make sure it ke
 Usually you need to focus on certain parts of the codebase anyway.
 Therefore, manually running specific commands combined with `entr(...)` makes sense.
 
+### Create a new package
 To generate a package without PackageTemplates use
 ```
 julia> using Pkg
@@ -27,6 +28,8 @@ julia> using Revise
 
 julia> using MyPkg
 ```
+
+### Test the package
 And to test the package 
 ```
 julia> using Pkg
@@ -39,3 +42,13 @@ entr(() -> Pkg.test("GenerateMarkdown"), [], [GenerateMarkdown])
 ```
 which will only run when a change occurs in the package. 
 Not when a change occurs in the test.
+
+### Adding a package
+To add a package `SomePkg`, make sure to be in the root folder of the project.
+Then
+```
+pkg> activate .
+
+pkg> add SomePkg
+```
+
