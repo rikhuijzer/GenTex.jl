@@ -1,0 +1,7 @@
+name = "GenerateMarkdown"
+uuid = "c7f5e78c-a7e6-11ea-3c41-edaefc2f1619"
+authors = ["Rik <rikhuijzer@pm.me>"]
+version = "0.1.0"
+
+[deps]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
