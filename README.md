@@ -29,6 +29,11 @@ julia> using Revise
 julia> using MyPkg
 ```
 
+### Add package folder to namespace
+```
+pkg> dev .
+```
+
 ### Test the package
 And to test the package 
 ```
@@ -48,6 +53,12 @@ To add a package `SomePkg`, make sure to be in the root folder of the project.
 Then
 ```
 pkg> activate .
+
+pkg> add SomePkg
+```
+or 
+```
+julia> using Pkg; Pkg.activate("SomePkg")
 
 pkg> add SomePkg
 ```

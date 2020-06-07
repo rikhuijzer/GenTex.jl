@@ -2,13 +2,14 @@ using GenerateMarkdown
 using Test
 
 @testset "LaTeX" begin
-	text = "a \(ab\)"
-	m = match(r"\\\([^\@]*\\\)", text)
+	text = "a ``a very long sentence``"
+	m = match(r"``[^``]*``", text)
 	actual = replace_with_fn!(text, m, x -> "|$x|")
-	@test actual == "a |ab|"
+	@test actual == "a |a very long sentence|"
 
 	# Smoke test.
-	# Do not link to specific `endswith` for now.
-	actual = replace_eqs!("@x=1@")
-	@test startswith(actual, "<img")
+	tmpdir = tempname() * '/'
+	mkdir(tmpdir)
+	@show latex_im!("x=1", tmpdir)
+	rm(tmpdir, recursive=true)
 end

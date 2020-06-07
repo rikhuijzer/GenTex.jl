@@ -8,15 +8,14 @@ wrap_eq(equation::AbstractString)::String = """
 \\end{document}"""	
 
 """
-Generate an inline LaTeX equation.
-Generate base64 image which can be passed as <img ... src=<base64>>
+Generate an image from latex code.
 """
-@memoize function base64_latex(equation::AbstractString)::String
+@memoize function latex_im!(latex::AbstractString, im_dir::String)
 	tmpdir = tempname() * '/'
 	mkdir(tmpdir)
-	file(extension) = tmpdir * "eq.$extension"
+	file(extension) = joinpath(tmpdir * "eq.$extension")
 	open(file("tex"), "w") do io
-		write(io, wrap_eq(equation))
+		write(io, wrap_eq(latex))
 	end
 	old_pwd = pwd()
 	# pdflatex uses current working directory to store intermediate files.
@@ -33,18 +32,18 @@ Generate base64 image which can be passed as <img ... src=<base64>>
 	catch e
 		throw(ErrorException("Failed to run convert. Is ImageMagick installed?"))
 	end
-	io = open(file("png"), "r")
-	raw = read(io)
-	close(io)
-	encoded = base64encode(raw)
+	tmpfilename = split(tmpdir, '/')[end-1]
+	imfilename = joinpath(im_dir, tmpfilename * ".png")
+	mv(file("png"), imfilename)
 	cd(old_pwd)
 	rm(tmpdir, recursive=true)
-	return "data:image/png;base64," * encoded
+	return imfilename
 end
+export latex_im!
 
 function inline_eq(equation::AbstractString)::String
 	encoded = base64_latex(equation)
-	"<img class='display-math' src='$(encoded)'>"
+	"\n<img class='display-math' src='$(encoded)'>\n"
 end
 export inline_eq
 
@@ -53,14 +52,14 @@ Replace a match by applying a function to it.
 """
 function replace_with_fn!(text::String, m::RegexMatch, fn)::String
 	before = text[1:m.offset - 1]
-	equation = m.match[2:end-1]
+	equation = m.match[3:end-2]
 	after = text[m.offset + length(m.match):end]
 	before * fn(equation) * after
 end
 export replace_with_fn!
 
 function replace_eqs!(text) 
-	matches = eachmatch(r"\@[^\@]*\@", text)
+	matches = eachmatch(r"``[^``]*``", text)
 	match = collect(matches)[1]
 	for m in matches
 		text = replace_with_fn!(text, m, inline_eq)
