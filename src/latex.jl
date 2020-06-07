@@ -37,13 +37,15 @@ Generate an image from latex code.
 	mv(file("png"), imfilename)
 	cd(old_pwd)
 	rm(tmpdir, recursive=true)
-	return imfilename
+	return tmpfilename * ".png"
 end
 export latex_im!
 
 function inline_eq(equation::AbstractString)::String
-	encoded = base64_latex(equation)
-	"\n<img class='display-math' src='$(encoded)'>\n"
+	im_dir = joinpath(homedir(), "git", "notes", "static", "gen_im")
+	im_name = latex_im!(equation, im_dir)
+	link = '/' * joinpath("gen_im", im_name)
+	"""<img class="display-math" src="$(link)">"""
 end
 export inline_eq
 
