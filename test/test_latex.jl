@@ -2,8 +2,8 @@ using GenerateMarkdown
 using Test
 
 @testset "LaTeX" begin
-	text = "a @ab@"
-	m = match(r"\@[^\@]*\@", text)
+	text = "a \(ab\)"
+	m = match(r"\\\([^\@]*\\\)", text)
 	actual = replace_with_fn!(text, m, x -> "|$x|")
 	@test actual == "a |ab|"
 

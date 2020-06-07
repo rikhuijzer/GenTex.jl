@@ -1,4 +1,5 @@
 using Base64
+using Memoize
 
 wrap_eq(equation::AbstractString)::String = """
 \\documentclass[convert={density=300,size=800x800,outext=.png}]{standalone}
@@ -10,22 +11,33 @@ wrap_eq(equation::AbstractString)::String = """
 Generate an inline LaTeX equation.
 Generate base64 image which can be passed as <img ... src=<base64>>
 """
-function base64_latex(equation::AbstractString)::String
+@memoize function base64_latex(equation::AbstractString)::String
 	tmpdir = tempname() * '/'
 	mkdir(tmpdir)
 	file(extension) = tmpdir * "eq.$extension"
 	open(file("tex"), "w") do io
 		write(io, wrap_eq(equation))
 	end
+	old_pwd = pwd()
+	# pdflatex uses current working directory to store intermediate files.
 	cd(tmpdir)
 	pdflatex = `pdflatex $(file("tex"))`
-	run(Base.CmdRedirect(pdflatex, devnull, 1, true))
+	try
+		run(Base.CmdRedirect(pdflatex, devnull, 1, true))
+	catch e
+		throw(ErrorException("Failed to run pdflatex. Is LaTeX installed?"))
+	end
 	convert = `convert -density 300 $(file("pdf")) -quality 95 $(file("png"))`
-	run(Base.CmdRedirect(convert, devnull, 2, false))
+	try
+		run(Base.CmdRedirect(convert, devnull, 2, false))
+	catch e
+		throw(ErrorException("Failed to run convert. Is ImageMagick installed?"))
+	end
 	io = open(file("png"), "r")
 	raw = read(io)
 	close(io)
 	encoded = base64encode(raw)
+	cd(old_pwd)
 	rm(tmpdir, recursive=true)
 	return "data:image/png;base64," * encoded
 end
@@ -56,6 +68,3 @@ function replace_eqs!(text)
 	text
 end
 export replace_eqs!
-
-tmp() = println(inline_eq("x = 1"))
-export tmp
