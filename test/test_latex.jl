@@ -2,14 +2,18 @@ using GenerateMarkdown
 using Test
 
 @testset "LaTeX" begin
-	text = "a ``a very long sentence``"
+	text = "a ``b``"
 	m = match(r"``[^``]*``", text)
 	actual = replace_with_fn!(text, m, x -> "|$x|")
-	@test actual == "a |a very long sentence|"
+	@test actual == "a |b|"
 
 	# Smoke test.
 	tmpdir = tempname() * '/'
 	mkdir(tmpdir)
-	@show latex_im!("x=1", tmpdir)
+	latex_im!("x=1", tmpdir)
 	rm(tmpdir, recursive=true)
+
+	text = "``y = \\sqrt{\\frac{a}{b}}``"
+	actual = replace_eqs!(text)
+	@test actual == "d"
 end

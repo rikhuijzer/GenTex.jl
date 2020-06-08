@@ -3,14 +3,24 @@ using Memoize
 
 wrap_eq(equation::AbstractString)::String = """
 \\documentclass[convert={density=300,size=800x800,outext=.png}]{standalone}
+\\nonstopmode
 \\begin{document}
 \$ $equation \$
 \\end{document}"""	
+
+@memoize function check_latex()
+	try 
+		run(pipeline(`pdflatex --help`, devnull))
+	catch 
+		throw(ErrorException("Failed to run pdflatex"))
+	end
+end
 
 """
 Generate an image from latex code.
 """
 @memoize function latex_im!(latex::AbstractString, im_dir::String)
+	check_latex()
 	tmpdir = tempname() * '/'
 	mkdir(tmpdir)
 	file(extension) = joinpath(tmpdir * "eq.$extension")
@@ -21,10 +31,15 @@ Generate an image from latex code.
 	# pdflatex uses current working directory to store intermediate files.
 	cd(tmpdir)
 	pdflatex = `pdflatex $(file("tex"))`
-	try
-		run(Base.CmdRedirect(pdflatex, devnull, 1, true))
-	catch e
-		throw(ErrorException("Failed to run pdflatex. Is LaTeX installed?"))
+	mktemp() do path, file
+		try
+			run(pipeline(pdflatex, stdout=devnull, stderr=path))
+		catch e
+			# Got a LaTeX error during generation.
+			open(path, "r") do io
+				println(read(io))
+			end
+		end
 	end
 	convert = `convert -density 300 $(file("pdf")) -quality 95 $(file("png"))`
 	try
@@ -43,6 +58,7 @@ export latex_im!
 
 function inline_eq(equation::AbstractString)::String
 	im_dir = joinpath(homedir(), "git", "notes", "static", "gen_im")
+	if !(isdir(im_dir)); mkdir(im_dir) end
 	im_name = latex_im!(equation, im_dir)
 	link = '/' * joinpath("gen_im", im_name)
 	"""<img class="display-math" src="$(link)">"""
@@ -62,8 +78,7 @@ export replace_with_fn!
 
 function replace_eqs!(text) 
 	matches = eachmatch(r"``[^``]*``", text)
-	match = collect(matches)[1]
-	for m in matches
+	for m in reverse(collect(matches))
 		text = replace_with_fn!(text, m, inline_eq)
 	end
 	text
