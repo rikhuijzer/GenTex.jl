@@ -20,6 +20,9 @@ function allranges(hits::Array{UnitRange,1}, s::AbstractString)::Array{UnitRange
 	push!(hits, after:after)
 	between(i) = hits[i-1].stop+1:hits[i].start-1 
 	betweens::Array{UnitRange,1} = map(between, 2:length(hits))
+	if betweens[1].stop == before
+		betweens = betweens[2:end]
+	end
 	if betweens[end].start == after
 		betweens = betweens[1:end-1]
 	end
