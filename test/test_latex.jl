@@ -12,8 +12,4 @@ using Test
 	mkdir(tmpdir)
 	latex_im!("x=1", tmpdir)
 	rm(tmpdir, recursive=true)
-
-	text = "``y = \\sqrt{\\frac{a}{b}}``"
-	actual = replace_eqs!(text)
-	@test actual == "d"
 end

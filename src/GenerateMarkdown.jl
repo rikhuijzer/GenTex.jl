@@ -1,7 +1,6 @@
 module GenerateMarkdown
 
-greet() = print("Hello World!")
-
+include("evalmd.jl")
 include("latex.jl")
 
 end # module

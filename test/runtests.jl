@@ -2,7 +2,10 @@ using GenerateMarkdown
 using Test
 
 # Based on `runtests.jl` from `DataStructures.jl`.
-tests = ["latex"]
+tests = [
+	"latex", 
+	"evalmd"
+	]
 
 if length(ARGS) > 0
 	tests = ARGS
