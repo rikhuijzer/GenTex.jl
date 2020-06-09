@@ -42,6 +42,8 @@ export splitmd
 evalpart(part::AbstractString)::String =
 	string(eval(Meta.parse(part[3:end-1])))
 
+# This entire function should probably be moved to a macro
+# so that the code can be evaluated in the right scope.
 function evalmd(md::AbstractString)
 	parts = splitmd(md)
 	for (i, part) in enumerate(parts)
