@@ -15,20 +15,20 @@ hits(md::AbstractString)::Array{UnitRange,1} =
 
 function allranges(hits::Array{UnitRange,1}, s::AbstractString)::Array{UnitRange,1}
 	before = 0
-	hits = pushfirst!(hits, before:before)
+	pushfirst!(hits, before:before)
 	after = length(s) + 1
-	hits = push!(hits, after:after)
-	between(i) = hits[i].stop+1:hits[i+1].start-1 
-	betweens::Array{UnitRange,1} = map(between, 1:length(hits)-1)
-	sort(vcat(hits, betweens)[2:end-1])
+	push!(hits, after:after)
+	between(i) = hits[i-1].stop+1:hits[i].start-1 
+	betweens::Array{UnitRange,1} = map(between, 2:length(hits))
+	if betweens[end].start == after
+		betweens = betweens[1:end-1]
+	end
+	hits = hits[2:end-1]
+	sort(vcat(hits, betweens))
 end
 allranges(s::AbstractString) = allranges(hits(s), s)
 
 function splitmd(md::AbstractString)
-	@show length(md)
-	@show allranges(md)
-	# Great. length("a\$b") == 3 != 4.
-	# @show map(range -> SubString(md, range), allranges(md))
-	"done"
+	map(range -> SubString(md, range), allranges(md))
 end
 export splitmd
