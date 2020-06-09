@@ -1,5 +1,7 @@
 regexes = Dict(
 	"display" => r"\$\$[^\$]+?\$\$", # For example, $$ x $$.
+	# Cannot handle nested parenthesis.
+	# Ignored for now since we can define functions above the raw string.
 	"eval" => r"\$\(.+?\)", # For example, $(x).
 	"inline" => r"\$(?![\(|\$]).{1}\$(?!\$)" # For example, $x$.
 )
@@ -35,3 +37,22 @@ function splitmd(md::AbstractString)
 	map(range -> SubString(md, range), allranges(md))
 end
 export splitmd
+
+# Should probably be a macro to ensure correct scope.
+evalpart(part::AbstractString)::String =
+	string(eval(Meta.parse(part[3:end-1])))
+
+function evalmd(md::AbstractString)
+	parts = splitmd(md)
+	for (i, part) in enumerate(parts)
+		if startswith(part, raw"$$")	
+			parts[i] = display_eq!(part)
+		elseif startswith(part, raw"$(")
+			parts[i] = evalpart(part)
+		elseif startswith(part, raw"$")
+			parts[i] = inline_eq!(part)
+		end
+	end
+	join(parts)
+end
+export evalmd

@@ -5,7 +5,7 @@ wrap_eq(equation::AbstractString)::String = """
 \\documentclass[convert={density=300,size=800x800,outext=.png}]{standalone}
 \\nonstopmode
 \\begin{document}
-\$ $equation \$
+$(equation)
 \\end{document}"""	
 
 @memoize function check_latex()
@@ -56,14 +56,18 @@ Generate an image from latex code.
 end
 export latex_im!
 
-function inline_eq(equation::AbstractString)::String
+function _eq!(equation::AbstractString, class::String)::String
 	im_dir = joinpath(homedir(), "git", "notes", "static", "gen_im")
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	im_name = latex_im!(equation, im_dir)
 	link = '/' * joinpath("gen_im", im_name)
-	"""<img class="display-math" src="$(link)">"""
+	"""<img class="$(class)" src="$(link)">"""
 end
-export inline_eq
+
+display_eq!(eq::AbstractString)::String = _eq!(eq, "display-math")
+export display_eq!
+inline_eq!(eq::AbstractString)::String = _eq!(eq, "inline-math")
+export inline_eq!
 
 """
 Replace a match by applying a function to it.
