@@ -33,12 +33,14 @@ Generate an image from latex code.
 	pdflatex = `pdflatex $(file("tex"))`
 	mktemp() do path, file
 		try
-			run(pipeline(pdflatex, stdout=devnull, stderr=path))
+			run(pipeline(pdflatex, stdout=path, stderr=devnull))
 		catch e
-			# Got a LaTeX error during generation.
 			open(path, "r") do io
-				println(read(io))
+				println(read(path, String))
 			end
+			throw(ErrorException("""Failed to run pdflatex on 
+				$(wrap_eq(latex))
+				"""))
 		end
 	end
 	convert = `convert -density 300 $(file("pdf")) -quality 95 $(file("png"))`
@@ -56,17 +58,19 @@ Generate an image from latex code.
 end
 export latex_im!
 
-function _eq!(equation::AbstractString, class::String)::String
+function _eq!(equation::AbstractString, class::String; param="")
 	im_dir = joinpath(homedir(), "git", "notes", "static", "gen_im")
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	im_name = latex_im!(equation, im_dir)
 	link = '/' * joinpath("gen_im", im_name)
-	"""<img class="$(class)" src="$(link)">"""
+	"""<img class="$(class)" $(param) src="$(link)">"""
 end
 
-display_eq!(eq::AbstractString)::String = _eq!(eq, "display-math")
+display_eq!(eq::AbstractString)::String = 
+	_eq!(eq, "display-math")
 export display_eq!
-inline_eq!(eq::AbstractString)::String = _eq!(eq, "inline-math")
+inline_eq!(eq::AbstractString)::String = 
+	_eq!(eq, "inline-math"; param="height=\"13\"")
 export inline_eq!
 
 """

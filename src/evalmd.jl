@@ -16,6 +16,9 @@ hits(md::AbstractString)::Array{UnitRange,1} =
 	sort(vcat(map(rx -> ranges(md, rx), last.(collect(regexes)))...))
 
 function allranges(hits::Array{UnitRange,1}, s::AbstractString)::Array{UnitRange,1}
+	if length(hits) == 0
+		return [1:length(s)]
+	end
 	before = 0
 	pushfirst!(hits, before:before)
 	after = length(s) + 1
@@ -38,23 +41,27 @@ function splitmd(md::AbstractString)
 end
 export splitmd
 
-# Should probably be a macro to ensure correct scope.
-evalpart(part::AbstractString)::String =
-	string(eval(Meta.parse(part[3:end-1])))
-
-# This entire function should probably be moved to a macro
-# so that the code can be evaluated in the right scope.
-function evalmd(md::AbstractString)
+function substitute_latex(md::AbstractString)
 	parts = splitmd(md)
 	for (i, part) in enumerate(parts)
 		if startswith(part, raw"$$")	
 			parts[i] = display_eq!(part)
-		elseif startswith(part, raw"$(")
-			parts[i] = evalpart(part)
 		elseif startswith(part, raw"$")
 			parts[i] = inline_eq!(part)
 		end
 	end
 	join(parts)
 end
-export evalmd
+export substitute_latex
+
+function substitute_latex!(frompath::String, topath::String)::String
+	io = open(frompath, "r") 
+	before = read(open(frompath, "r"), String)
+	after = substitute_latex(before)
+	close(io)
+	open(topath, "w") do io
+		write(io, after)
+	end
+	topath
+end
+export substitute_latex!
