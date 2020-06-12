@@ -4,6 +4,7 @@ using Memoize
 wrap_eq(equation::AbstractString)::String = """
 \\documentclass[convert={density=300,size=800x800,outext=.png}]{standalone}
 \\nonstopmode
+\\usepackage{amsmath}
 \\begin{document}
 $(equation)
 \\end{document}"""	

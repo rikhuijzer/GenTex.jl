@@ -1,4 +1,13 @@
-# GenerateMarkdown
+# GenTex
+
+**This project is in beta. I know whether I am able to finish it before September 2020.**
+
+Generate LaTeX images which can be added to Markdown or HTML.
+This project is similar to and based on <https://github.com/liamoc/latex-formulae>.
+Benefits of rendering LaTeX to images are to
+
+- avoid JavaScript on the client-side, and
+- allow full LaTeX capabilities (for example, the `tikz` package).
 
 ## Development
 In Julia it seems to be the idea that you manually start the REPL in combination with Revise.
