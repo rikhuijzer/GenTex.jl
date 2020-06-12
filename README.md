@@ -9,6 +9,17 @@ Benefits of rendering LaTeX to images are to
 - avoid JavaScript on the client-side, and
 - allow full LaTeX capabilities (for example, the `tikz` package).
 
+## Usage
+Clone the repository to `~.julia/dev` and start the Julia REPL via `julia`.
+
+```
+julia> dev GenTex.jl
+
+julia> using GenTex
+
+julia> substitute_latex!(frompath, topath)
+```
+
 ## Development
 In Julia it seems to be the idea that you manually start the REPL in combination with Revise.
 It is starting to make sense to me.
