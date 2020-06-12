@@ -22,10 +22,6 @@ julia> substitute_latex!(frompath, topath)
 
 ## Development
 In Julia it seems to be the idea that you manually start the REPL in combination with Revise.
-It is starting to make sense to me.
-You just need to start the REPL once per development session and make sure it keeps running.
-Usually you need to focus on certain parts of the codebase anyway.
-Therefore, manually running specific commands combined with `entr(...)` makes sense.
 
 ### Create a new package
 To generate a package without PackageTemplates use
