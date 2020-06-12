@@ -1,13 +1,30 @@
 using Base64
 using Memoize
 
-wrap_eq(equation::AbstractString)::String = """
+tex_header = """
 \\documentclass[convert={density=300,size=800x800,outext=.png}]{standalone}
 \\nonstopmode
 \\usepackage{amsmath}
-\\begin{document}
-$(equation)
-\\end{document}"""	
+\\begin{document}"""
+
+function wrap_eq(equation::AbstractString)::String
+	# TODO: Make struct for (equation, displaystyle).
+	if startswith(equation, raw"$$") 
+		displaystyle = true
+		equation = equation[3:end-2]
+	elseif startswith(equation, raw"$")
+		displaystyle = false
+		equation = equation[2:end-1]
+	end
+
+	# Based on https://tex.stackexchange.com/questions/50162.
+	return """
+	$(tex_header)
+	\$ $(displaystyle ? "\\displaystyle " : "")
+	$(equation)
+	\$
+	\\end{document}"""	
+end
 
 @memoize function check_latex()
 	try 

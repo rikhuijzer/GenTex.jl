@@ -1,20 +1,32 @@
 regexes = Dict(
 	"display" => r"\$\$[^\$]+?\$\$", # For example, $$ x $$.
-	# Cannot handle nested parenthesis.
-	# Ignored for now since we can define functions above the raw string.
-	"eval" => r"\$\(.+?\)", # For example, $(x).
-	"inline" => r"\$(?![\(|\$]).{1}\$(?!\$)" # For example, $x$.
+	"inline" => r"(?<!\$)\$(?!\$).{1}.*?\$" # For example, $x$.
 )
 
+"""
+Convert a RegexMatch to its start and stop location in a string.
+"""
 match2range(m::RegexMatch)::UnitRange =
 	m.offset:m.offset + (length(m.match) - 1)
 
-ranges(s::AbstractString, rx::Regex)::Array{UnitRange,1} = 
+"""
+Obtain a start and stop location for each regex match for `rx`.
+"""
+function ranges(s::AbstractString, rx::Regex)::Array{UnitRange,1} 
+	# map(println, eachmatch(rx, s))
 	map(match2range, eachmatch(rx, s))
+end
 
+"""
+Obtain a start and stop location for each regex matches in `regexes`.
+"""
 hits(md::AbstractString)::Array{UnitRange,1} =
 	sort(vcat(map(rx -> ranges(md, rx), last.(collect(regexes)))...))
 
+"""
+Combine the start and stop locations for regex matches with the ranges in between,
+that is, ensure that each position in the string is contained in a range.
+"""
 function allranges(hits::Array{UnitRange,1}, s::AbstractString)::Array{UnitRange,1}
 	if length(hits) == 0
 		return [1:length(s)]
@@ -36,6 +48,10 @@ function allranges(hits::Array{UnitRange,1}, s::AbstractString)::Array{UnitRange
 end
 allranges(s::AbstractString) = allranges(hits(s), s)
 
+"""
+Return all regex matches for `regexes` and the strings in between the matches,
+that is, return a list of strings such that a `join` would return `md` again.
+"""
 function splitmd(md::AbstractString)
 	map(range -> SubString(md, range), allranges(md))
 end
