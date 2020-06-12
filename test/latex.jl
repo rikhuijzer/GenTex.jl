@@ -1,4 +1,4 @@
-using GenerateMarkdown
+using GenTex
 using Test
 
 @testset "LaTeX" begin
@@ -6,5 +6,6 @@ using Test
 	tmpdir = tempname() * '/'
 	mkdir(tmpdir)
 	latex_im!(raw"$x=1$", tmpdir)
+	latex_im!(raw"$$x=1$$", tmpdir)
 	rm(tmpdir, recursive=true)
 end

@@ -1,7 +1,6 @@
-using GenerateMarkdown
 using Test
 
-@testset "GenerateMarkdown" begin
+@testset "GenTex" begin
 	include("evalmd.jl")
 	include("latex.jl")
 end

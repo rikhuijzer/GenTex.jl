@@ -54,20 +54,6 @@ julia> using MyPkg
 pkg> dev .
 ```
 
-### Test the package
-And to test the package 
-```
-julia> using Pkg
-
-julia> Pkg.test("MyPkg")
-```
-Or, in a Revise script
-```
-entr(() -> Pkg.test("GenerateMarkdown"), [], [GenerateMarkdown])
-```
-which will only run when a change occurs in the package. 
-Not when a change occurs in the test.
-
 ### Adding a package
 To add a package `SomePkg`, make sure to be in the root folder of the project.
 Then
