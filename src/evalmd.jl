@@ -1,3 +1,9 @@
+struct Equation
+	text::AbstractString
+	scale::Float64
+end
+export Equation
+
 regexes = Dict(
 	"display" => r"\$\$[^\$]+?\$\$", # For example, $$ x $$.
 	"inline" => r"(?<!\$)\$(?!\$).{1}.*?\$" # For example, $x$.
@@ -57,23 +63,23 @@ function splitmd(md::AbstractString)
 end
 export splitmd
 
-function substitute_latex(md::AbstractString)
+function substitute_latex(md::AbstractString, scale::Float64)
 	parts = splitmd(md)
 	for (i, part) in enumerate(parts)
 		if startswith(part, raw"$$")	
-			parts[i] = display_eq!(part)
+			parts[i] = display_eq!(Equation(part, scale))
 		elseif startswith(part, raw"$")
-			parts[i] = inline_eq!(part)
+			parts[i] = inline_eq!(Equation(part, scale))
 		end
 	end
 	join(parts)
 end
 export substitute_latex
 
-function substitute_latex!(frompath::String, topath::String)::String
+function substitute_latex!(frompath::String, topath::String; scale=1.0)::String
 	io = open(frompath, "r") 
 	before = read(open(frompath, "r"), String)
-	after = substitute_latex(before)
+	after = substitute_latex(before, scale)
 	close(io)
 	open(topath, "w") do io
 		write(io, after)

@@ -2,10 +2,6 @@ using Base64
 using Dates
 using Memoize
 
-struct Equation
-	text::AbstractString
-	scale::Float64
-end
 
 preamble = """
 \\documentclass[12pt]{article}
@@ -13,10 +9,10 @@ preamble = """
 \\pagestyle{empty}
 \\usepackage{amsmath}"""
 
-wrap_eq(equation::AbstractString)::String = """
+wrap_eq(eq::Equation)::String = """
 	$(preamble)
 	\\begin{document}
-	$(equation)
+	$(eq.text)
 	\\end{document}"""	
 
 @memoize function check_latex()
@@ -31,13 +27,13 @@ end
 Generate an image from latex code.
 """
 # @memoize 
-function latex_im!(latex::AbstractString, im_dir::String)
+function latex_im!(eq::Equation, im_dir::String)
 	check_latex()
 	tmpdir = tempname() * '/'
 	mkdir(tmpdir)
 	file(extension) = joinpath(tmpdir * "eq.$extension")
 	open(file("tex"), "w") do io
-		write(io, wrap_eq(latex))
+		write(io, wrap_eq(eq))
 	end
 	old_pwd = pwd()
 	# pdflatex uses current working directory to store intermediate files.
@@ -78,18 +74,18 @@ function latex_im!(latex::AbstractString, im_dir::String)
 end
 export latex_im!
 
-function _eq!(equation::AbstractString, class::String; param="")
+function _eq!(eq::Equation, class::String; param="")
 	im_dir = joinpath(homedir(), "git", "notes", "static", "gen_im")
 	if !(isdir(im_dir)); mkdir(im_dir) end
-	im_name = latex_im!(equation, im_dir)
+	im_name = latex_im!(eq, im_dir)
 	link = '/' * joinpath("gen_im", im_name)
 	"""<img class="$(class)" $(param) src="$(link)">"""
 end
 
-display_eq!(eq::AbstractString)::String = 
+display_eq!(eq::Equation)::String = 
 	_eq!(eq, "display-math")
 export display_eq!
-inline_eq!(eq::AbstractString)::String = 
+inline_eq!(eq::Equation)::String = 
 	_eq!(eq, "inline-math")
 export inline_eq!
 
