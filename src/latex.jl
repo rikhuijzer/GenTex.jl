@@ -52,7 +52,6 @@ function latex_im!(eq::Equation, im_dir::String)
 		end
 	end
 	crop = `pdfcrop $(file("pdf")) $(file("crop.pdf"))`
-	# convert = `convert -density 300 $(file("pdf")) -quality 95 $(file("png"))`
 	try
 		run(pipeline(crop, stdout=devnull, stderr=devnull))
 	catch e
@@ -66,17 +65,19 @@ function latex_im!(eq::Equation, im_dir::String)
 	end
 	mv(file("crop"), file("svg"))
 	tmpfilename = split(tmpdir, '/')[end-1]
-	imfilename = joinpath(im_dir, tmpfilename * ".svg")
-	mv(file("svg"), imfilename)
+	im_name = "$(hash(eq.text)).svg"
+	imfilename = joinpath(im_dir, im_name)
+	mv(file("svg"), imfilename, force=true)
 	cd(old_pwd)
 	rm(tmpdir, recursive=true)
-	return tmpfilename * ".svg"
+	return im_name
 end
 export latex_im!
 
 function determine_param(eq::Equation, im_dir, im_name)::Array{String,1}
 	link = '/' * joinpath("gen_$(eq.project_name)", im_name)
-	@show im_dir, im_name
+	# @show im_dir, im_name
+	
 	return [
 		"src=\"$(link)\""
 	]
@@ -87,7 +88,8 @@ function _eq!(eq::Equation, class::String)
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	im_name = latex_im!(eq, im_dir)
 	param = determine_param(eq, im_dir, im_name)
-	"""<img class="$(class)" $(join(param, ' '))>"""
+	img = """<img class="$(class)" $(join(param, ' '))>"""
+	startswith(eq.text, "\$\$") ? "<center>$(img)</center>" : img
 end
 
 display_eq!(eq::Equation)::String = 

@@ -95,7 +95,7 @@ function show_example!()
 	title: LaTeX demo
 	---
 	# Demo
-	This is an example text with $x$, $x_2$ and $x^3$.
+	This is an example text with $x$, $x_2$, $x^3$ and $u \cdot v$.
 	
 	$$ y = \frac{a + 1}{b + 1^2} $$
 
