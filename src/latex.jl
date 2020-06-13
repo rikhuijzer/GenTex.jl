@@ -26,7 +26,6 @@ end
 """
 Generate an image from latex code.
 """
-# @memoize 
 function latex_im!(eq::Equation, im_dir::String)
 	check_latex()
 	tmpdir = tempname() * '/'
@@ -77,15 +76,32 @@ function latex_im!(eq::Equation, im_dir::String)
 end
 export latex_im!
 
+function dimensions(svg_path::AbstractString)::Tuple{Int64,Int64}
+	io = open(svg_path, "r")
+	svg = read(io, String)
+	close(io)
+	w = match(r"width='[0-9]+pt'", svg)
+	h = match(r"height='[0-9]+pt'", svg)
+	match2num(m::RegexMatch) = parse(Int, match(r"[0-9]+", m.match).match)
+	return (match2num(w), match2num(h))
+end
+
 function determine_param(eq::Equation, im_dir, im_name)::Array{String,1}
 	link = '/' * joinpath("latex", im_name)
-	@show im_dir, im_name
+	im_path = joinpath(im_dir, im_name)
+	(w, h) = dimensions(im_path)
+	width = round(eq.scale * w; digits=3)
+	height = round(eq.scale * h; digits=3)
 	
 	return [
-		"src=\"$(link)\""
+		"src=\"$(link)\"",
+		"width=\"$(width)\"",
+		"height=\"$(height)\""
 	]
 end
 
+# Removed for debugging purposes:
+# @memoize 
 function _eq!(eq::Equation, class::String)
 	# TODO: Pass this dir.
 	im_dir = joinpath(homedir(), "git", "notes", "static", "latex")

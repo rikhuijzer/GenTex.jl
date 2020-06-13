@@ -106,7 +106,7 @@ function show_example!()
 	open(temp, "w") do io
 		write(io, example)
 	end
-	substitute_latex!(temp, out_path)
+	substitute_latex!(temp, out_path, scale=1.6)
 	rm(tmpdir, recursive=true)
 	println("File written - $(Dates.Time(Dates.now()))"[1:end-4])
 end
