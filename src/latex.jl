@@ -74,19 +74,26 @@ function latex_im!(eq::Equation, im_dir::String)
 end
 export latex_im!
 
-function _eq!(eq::Equation, class::String; param="")
-	im_dir = joinpath(homedir(), "git", "notes", "static", "gen_im")
+function determine_param(eq::Equation, im_dir, im_name)::Array{String,1}
+	link = '/' * joinpath("gen_$(eq.project_name)", im_name)
+	@show im_dir, im_name
+	return [
+		"src=\"$(link)\""
+	]
+end
+
+function _eq!(eq::Equation, class::String)
+	im_dir = joinpath(homedir(), "git", "notes", "static", "gen_$(eq.project_name)")
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	im_name = latex_im!(eq, im_dir)
-	link = '/' * joinpath("gen_im", im_name)
-	"""<img class="$(class)" $(param) src="$(link)">"""
+	param = determine_param(eq, im_dir, im_name)
+	"""<img class="$(class)" $(join(param, ' '))>"""
 end
 
 display_eq!(eq::Equation)::String = 
 	_eq!(eq, "display-math")
 export display_eq!
-inline_eq!(eq::Equation)::String = 
+inline_eq!(eq::Equation)::String =
 	_eq!(eq, "inline-math")
 export inline_eq!
-
 

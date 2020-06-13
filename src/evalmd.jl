@@ -1,6 +1,7 @@
 struct Equation
 	text::AbstractString
 	scale::Float64
+	project_name::AbstractString
 end
 export Equation
 
@@ -63,23 +64,23 @@ function splitmd(md::AbstractString)
 end
 export splitmd
 
-function substitute_latex(md::AbstractString, scale::Float64)
+function substitute_latex(md::AbstractString, project_name, scale::Float64)
 	parts = splitmd(md)
 	for (i, part) in enumerate(parts)
 		if startswith(part, raw"$$")	
-			parts[i] = display_eq!(Equation(part, scale))
+			parts[i] = display_eq!(Equation(part, scale, project_name))
 		elseif startswith(part, raw"$")
-			parts[i] = inline_eq!(Equation(part, scale))
+			parts[i] = inline_eq!(Equation(part, scale, project_name))
 		end
 	end
 	join(parts)
 end
 export substitute_latex
 
-function substitute_latex!(frompath::String, topath::String; scale=1.0)::String
+function substitute_latex!(frompath, topath, project_name; scale=1.0)::String
 	io = open(frompath, "r") 
 	before = read(open(frompath, "r"), String)
-	after = substitute_latex(before, scale)
+	after = substitute_latex(before, project_name, scale)
 	close(io)
 	open(topath, "w") do io
 		write(io, after)
@@ -102,11 +103,12 @@ function show_example!()
 	out_path = joinpath(homedir(), "git", "notes", "content", "docs", "jmd", "example.md")
 	tmpdir = tempname(cleanup=false) * '/'
 	mkdir(tmpdir)
-	temp = joinpath(tmpdir, "example.md")
+	project_name = "example"
+	temp = joinpath(tmpdir, "$project_name.md")
 	open(temp, "w") do io
 		write(io, example)
 	end
-	substitute_latex!(temp, out_path)
+	substitute_latex!(temp, out_path, project_name)
 	rm(tmpdir, recursive=true)
 	println("File written - $(Dates.Time(Dates.now()))"[1:end-4])
 end
