@@ -1,14 +1,20 @@
 using Base64
+using Dates
 using Memoize
 
-tex_header = """
+struct Equation
+	text::AbstractString
+	scale::Float64
+end
+
+preamble = """
 \\documentclass[12pt]{article}
 \\nonstopmode
 \\pagestyle{empty}
 \\usepackage{amsmath}"""
 
 wrap_eq(equation::AbstractString)::String = """
-	$(tex_header)
+	$(preamble)
 	\\begin{document}
 	$(equation)
 	\\end{document}"""	
@@ -24,7 +30,8 @@ end
 """
 Generate an image from latex code.
 """
-@memoize function latex_im!(latex::AbstractString, im_dir::String)
+# @memoize 
+function latex_im!(latex::AbstractString, im_dir::String)
 	check_latex()
 	tmpdir = tempname() * '/'
 	mkdir(tmpdir)
@@ -83,25 +90,7 @@ display_eq!(eq::AbstractString)::String =
 	_eq!(eq, "display-math")
 export display_eq!
 inline_eq!(eq::AbstractString)::String = 
-	_eq!(eq, "inline-math"; param="height=\"13\"")
+	_eq!(eq, "inline-math")
 export inline_eq!
 
-"""
-Replace a match by applying a function to it.
-"""
-function replace_with_fn!(text::String, m::RegexMatch, fn)::String
-	before = text[1:m.offset - 1]
-	equation = m.match[3:end-2]
-	after = text[m.offset + length(m.match):end]
-	before * fn(equation) * after
-end
-export replace_with_fn!
 
-function replace_eqs!(text) 
-	matches = eachmatch(r"``[^``]*``", text)
-	for m in reverse(collect(matches))
-		text = replace_with_fn!(text, m, inline_eq)
-	end
-	text
-end
-export replace_eqs!

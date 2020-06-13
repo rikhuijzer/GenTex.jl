@@ -81,3 +81,27 @@ function substitute_latex!(frompath::String, topath::String)::String
 	topath
 end
 export substitute_latex!
+
+function show_example!() 
+	example = raw"""
+	---
+	title: LaTeX demo
+	---
+	# Demo
+	This is an example text with $x$, $x_2$ and $x^3$.
+	
+	$$ y = \frac{a + 1}{b + 1^2} $$
+
+	"""
+	out_path = joinpath(homedir(), "git", "notes", "content", "docs", "jmd", "example.md")
+	tmpdir = tempname(cleanup=false) * '/'
+	mkdir(tmpdir)
+	temp = joinpath(tmpdir, "example.md")
+	open(temp, "w") do io
+		write(io, example)
+	end
+	substitute_latex!(temp, out_path)
+	rm(tmpdir, recursive=true)
+	println("File written - $(Dates.Time(Dates.now()))"[1:end-4])
+end
+export show_example!
