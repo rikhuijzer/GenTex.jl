@@ -2,8 +2,9 @@ using Base64
 using Memoize
 
 tex_header = """
-\\documentclass[convert={density=300,size=800x800,outext=.png}]{standalone}
+\\documentclass[12pt]{article}
 \\nonstopmode
+\\pagestyle{empty}
 \\usepackage{amsmath}"""
 
 wrap_eq(equation::AbstractString)::String = """
