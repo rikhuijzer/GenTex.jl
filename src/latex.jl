@@ -4,27 +4,13 @@ using Memoize
 tex_header = """
 \\documentclass[convert={density=300,size=800x800,outext=.png}]{standalone}
 \\nonstopmode
-\\usepackage{amsmath}
-\\begin{document}"""
+\\usepackage{amsmath}"""
 
-function wrap_eq(equation::AbstractString)::String
-	# TODO: Make struct for (equation, displaystyle).
-	if startswith(equation, raw"$$") 
-		displaystyle = true
-		equation = equation[3:end-2]
-	elseif startswith(equation, raw"$")
-		displaystyle = false
-		equation = equation[2:end-1]
-	end
-
-	# Based on https://tex.stackexchange.com/questions/50162.
-	return """
+wrap_eq(equation::AbstractString)::String = """
 	$(tex_header)
-	\$ $(displaystyle ? "\\displaystyle " : "")
+	\\begin{document}
 	$(equation)
-	\$
 	\\end{document}"""	
-end
 
 @memoize function check_latex()
 	try 
@@ -61,18 +47,26 @@ Generate an image from latex code.
 				"""))
 		end
 	end
-	convert = `convert -density 300 $(file("pdf")) -quality 95 $(file("png"))`
+	crop = `pdfcrop $(file("pdf")) $(file("crop.pdf"))`
+	# convert = `convert -density 300 $(file("pdf")) -quality 95 $(file("png"))`
 	try
-		run(Base.CmdRedirect(convert, devnull, 2, false))
+		run(pipeline(crop, stdout=devnull, stderr=devnull))
 	catch e
-		throw(ErrorException("Failed to run convert. Is ImageMagick installed?"))
+		throw(ErrorException("Failed to run pdfcrop. Is pdfcrop installed?"))
 	end
+	pdf2svg = `dvisvgm --pdf $(file("crop.pdf"))`
+	try
+		run(pipeline(pdf2svg, stdout=devnull, stderr=devnull))
+	catch e
+		throw(ErrorException("Failed to run dvisvgm. Is dvisvgm installed?"))
+	end
+	mv(file("crop"), file("svg"))
 	tmpfilename = split(tmpdir, '/')[end-1]
-	imfilename = joinpath(im_dir, tmpfilename * ".png")
-	mv(file("png"), imfilename)
+	imfilename = joinpath(im_dir, tmpfilename * ".svg")
+	mv(file("svg"), imfilename)
 	cd(old_pwd)
 	rm(tmpdir, recursive=true)
-	return tmpfilename * ".png"
+	return tmpfilename * ".svg"
 end
 export latex_im!
 
