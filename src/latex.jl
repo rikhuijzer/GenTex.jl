@@ -66,6 +66,9 @@ function latex_im!(eq::Equation, im_dir::String)
 	mv(file("crop"), file("svg"))
 	tmpfilename = split(tmpdir, '/')[end-1]
 	im_name = "$(hash(eq.text)).svg"
+	# Make sure to write all LaTeX images for one (static) website to the same
+	# directory. That, in combination with the hash function, will allow the 
+	# browser to reuse LaTeX accross pages which reduces page loading time.
 	imfilename = joinpath(im_dir, im_name)
 	mv(file("svg"), imfilename, force=true)
 	cd(old_pwd)
@@ -75,8 +78,8 @@ end
 export latex_im!
 
 function determine_param(eq::Equation, im_dir, im_name)::Array{String,1}
-	link = '/' * joinpath("gen_$(eq.project_name)", im_name)
-	# @show im_dir, im_name
+	link = '/' * joinpath("latex", im_name)
+	@show im_dir, im_name
 	
 	return [
 		"src=\"$(link)\""
@@ -84,7 +87,8 @@ function determine_param(eq::Equation, im_dir, im_name)::Array{String,1}
 end
 
 function _eq!(eq::Equation, class::String)
-	im_dir = joinpath(homedir(), "git", "notes", "static", "gen_$(eq.project_name)")
+	# TODO: Pass this dir.
+	im_dir = joinpath(homedir(), "git", "notes", "static", "latex")
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	im_name = latex_im!(eq, im_dir)
 	param = determine_param(eq, im_dir, im_name)
