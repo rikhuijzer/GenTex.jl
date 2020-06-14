@@ -2,18 +2,52 @@ using Base64
 using Dates
 using Memoize
 
+preamble = raw"""
+	\documentclass[12pt]{article}
+	\nonstopmode
+	\usepackage{amsmath}
+	\pagestyle{empty}"""
 
-preamble = """
-\\documentclass[12pt]{article}
-\\nonstopmode
-\\pagestyle{empty}
-\\usepackage{amsmath}"""
-
-wrap_eq(eq::Equation)::String = """
-	$(preamble)
-	\\begin{document}
-	$(eq.text)
-	\\end{document}"""	
+function wrap_eq(eq::Equation)::String
+	if eq.type == "display"
+		# The `lrbox` errors on display math (`$$ ... $$`).
+		return string(
+			preamble, """
+			\\begin{document}
+			$(eq.text)
+			\\end{document}"""
+		)
+	else 
+		# Using the `lrbox` to determine the baseline and resulting depth.
+		# Source: http://mactextoolbox.sourceforge.net/articles/baseline.html
+		return string(
+			preamble, 
+			raw"""
+			\newsavebox{\mybox}
+			\newlength{\mywidth}
+			\newlength{\myheight}
+			\newlength{\mydepth}
+			\begin{lrbox}{\mybox}
+			""",
+			eq.text, '\n',
+			raw"""
+			\end{lrbox}
+			\settowidth {\mywidth}  {\usebox{\mybox}}
+			\settoheight{\myheight} {\usebox{\mybox}}
+			\settodepth {\mydepth}  {\usebox{\mybox}}
+			\newwrite\foo
+			\immediate\openout\foo=\jobname.sizes
+				\immediate\write\foo{Depth = \the\mydepth}
+				\immediate\write\foo{Height = \the\myheight}
+				\addtolength{\myheight} {\mydepth}
+				\immediate\write\foo{TotalHeight = \the\myheight}
+				\immediate\write\foo{Width = \the\mywidth}
+			\closeout\foo
+			\begin{document}
+			\usebox{\mybox}
+			\end{document}""")
+	end
+end
 
 @memoize function check_latex()
 	try 
@@ -46,7 +80,7 @@ function latex_im!(eq::Equation, im_dir::String)
 				println(read(path, String))
 			end
 			throw(ErrorException("""Failed to run pdflatex on 
-				$(wrap_eq(latex))
+				$(wrap_eq(eq))
 				"""))
 		end
 	end

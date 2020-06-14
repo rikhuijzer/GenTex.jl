@@ -1,6 +1,7 @@
 struct Equation
 	text::AbstractString
 	scale::Float64
+	type::String # Either `display` or `inline`.
 end
 export Equation
 
@@ -67,9 +68,9 @@ function substitute_latex(md::AbstractString, scale::Float64)
 	parts = splitmd(md)
 	for (i, part) in enumerate(parts)
 		if startswith(part, raw"$$")	
-			parts[i] = display_eq!(Equation(part, scale))
+			parts[i] = display_eq!(Equation(part, scale, "display"))
 		elseif startswith(part, raw"$")
-			parts[i] = inline_eq!(Equation(part, scale))
+			parts[i] = inline_eq!(Equation(part, scale, "inline"))
 		end
 	end
 	join(parts)
