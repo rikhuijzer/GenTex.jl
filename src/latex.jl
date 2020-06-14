@@ -2,6 +2,8 @@ using Base64
 using Dates
 using Memoize
 
+match2num(m::RegexMatch) = parse(Float64, match(r"[0-9]+", m.match).match)
+
 preamble = raw"""
 	\documentclass[12pt]{article}
 	\nonstopmode
@@ -57,6 +59,14 @@ end
 	end
 end
 
+function get_sizes(path::AbstractString)::Tuple{Float64,Float64}
+	io = open(svg_path, "r")
+	svg = read(io, String)
+	close(io)
+	w = match(r"width='[0-9]+pt'", svg)
+	h = match(r"height='[0-9]+pt'", svg)
+end
+
 """
 Generate an image from latex code.
 """
@@ -102,27 +112,31 @@ function latex_im!(eq::Equation, im_dir::String)
 	# Make sure to write all LaTeX images for one (static) website to the same
 	# directory. That, in combination with the hash function, will allow the 
 	# browser to reuse LaTeX accross pages which reduces page loading time.
-	imfilename = joinpath(im_dir, im_name)
-	mv(file("svg"), imfilename, force=true)
+	im_path = joinpath(im_dir, im_name)
+	mv(file("svg"), im_path, force=true)
 	cd(old_pwd)
 	rm(tmpdir, recursive=true)
-	return im_name
+	if eq.type == "display"
+		return DisplayEquationImage(eq, im_dir, im_name)
+	else
+		# (height, depth) = get_sizes(file("sizes"))
+		return InlineEquationImage(eq, im_dir, im_name, 0, 0)
+	end
 end
 export latex_im!
 
-function dimensions(svg_path::AbstractString)::Tuple{Int64,Int64}
+function dimensions(svg_path::AbstractString)::Tuple{Float64,Float64}
 	io = open(svg_path, "r")
 	svg = read(io, String)
 	close(io)
 	w = match(r"width='[0-9]+pt'", svg)
 	h = match(r"height='[0-9]+pt'", svg)
-	match2num(m::RegexMatch) = parse(Int, match(r"[0-9]+", m.match).match)
 	return (match2num(w), match2num(h))
 end
 
-function determine_param(eq::Equation, im_dir, im_name)::Array{String,1}
-	link = '/' * joinpath("latex", im_name)
-	im_path = joinpath(im_dir, im_name)
+function determine_param(eq::Equation, eq_image)::Array{String,1}
+	link = '/' * joinpath("latex", eq_image.im_name)
+	im_path = joinpath(eq_image.im_dir, eq_image.im_name)
 	(w, h) = dimensions(im_path)
 	width = round(eq.scale * w; digits=3)
 	height = round(eq.scale * h; digits=3)
@@ -140,8 +154,8 @@ function _eq!(eq::Equation, class::String)
 	# TODO: Pass this dir.
 	im_dir = joinpath(homedir(), "git", "notes", "static", "latex")
 	if !(isdir(im_dir)); mkdir(im_dir) end
-	im_name = latex_im!(eq, im_dir)
-	param = determine_param(eq, im_dir, im_name)
+	eq_image = latex_im!(eq, im_dir)
+	param = determine_param(eq, eq_image)
 	img = """<img class="$(class)" $(join(param, ' '))>"""
 	startswith(eq.text, "\$\$") ? "<center>$(img)</center>" : img
 end

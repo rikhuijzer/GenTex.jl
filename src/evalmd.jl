@@ -5,6 +5,20 @@ struct Equation
 end
 export Equation
 
+struct DisplayEquationImage
+	eq::Equation
+	im_dir::AbstractString
+	im_name::AbstractString
+end
+
+struct InlineEquationImage
+	eq::Equation
+	im_dir::AbstractString
+	im_name::AbstractString
+	myheight::Float64 # Height according to `.sizes` file.
+	mydepth::Float64 # Depth according to `.sizes` file.
+end
+
 regexes = Dict(
 	"display" => r"\$\$[^\$]+?\$\$", # For example, $$ x $$.
 	"inline" => r"(?<!\$)\$(?!\$).{1}.*?\$" # For example, $x$.
