@@ -1,8 +1,8 @@
-using Base64
 using Dates
 using Memoize
 
-match2num(m::RegexMatch) = parse(Float64, match(r"[0-9]+", m.match).match)
+floatregex = "([0-9]*[.])?[0-9]+"
+match2num(m::RegexMatch) = parse(Float64, match(Regex(floatregex), m.match).match)
 
 preamble = raw"""
 	\documentclass[12pt]{article}
@@ -60,11 +60,12 @@ end
 end
 
 function get_sizes(path::AbstractString)::Tuple{Float64,Float64}
-	io = open(svg_path, "r")
-	svg = read(io, String)
+	io = open(path, "r")
+	sizes = read(io, String)
 	close(io)
-	w = match(r"width='[0-9]+pt'", svg)
-	h = match(r"height='[0-9]+pt'", svg)
+	height = match(Regex("TotalHeight = $(floatregex)pt"), sizes)
+	depth = match(Regex("Depth = $(floatregex)pt"), sizes)
+	(match2num(height), match2num(depth))
 end
 
 """
@@ -115,13 +116,14 @@ function latex_im!(eq::Equation, im_dir::String)
 	im_path = joinpath(im_dir, im_name)
 	mv(file("svg"), im_path, force=true)
 	cd(old_pwd)
-	rm(tmpdir, recursive=true)
 	if eq.type == "display"
-		return DisplayEquationImage(eq, im_dir, im_name)
+		eq_image = DisplayEquationImage(eq, im_dir, im_name)
 	else
-		# (height, depth) = get_sizes(file("sizes"))
-		return InlineEquationImage(eq, im_dir, im_name, 0, 0)
+		(height, depth) = get_sizes(file("sizes"))
+		eq_image =  InlineEquationImage(eq, im_dir, im_name, height, depth)
 	end
+	rm(tmpdir, recursive=true)
+	return eq_image
 end
 export latex_im!
 
@@ -129,8 +131,8 @@ function dimensions(svg_path::AbstractString)::Tuple{Float64,Float64}
 	io = open(svg_path, "r")
 	svg = read(io, String)
 	close(io)
-	w = match(r"width='[0-9]+pt'", svg)
-	h = match(r"height='[0-9]+pt'", svg)
+	w = match(Regex("width='$(floatregex)pt'"), svg)
+	h = match(Regex("height='$(floatregex)pt'"), svg)
 	return (match2num(w), match2num(h))
 end
 
