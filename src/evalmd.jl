@@ -15,6 +15,7 @@ struct InlineEquationImage
 	eq::Equation
 	im_dir::AbstractString
 	im_name::AbstractString
+	# Height could allow for scaling depth if necessary.
 	myheight::Float64 # Height according to `.sizes` file.
 	mydepth::Float64 # Depth according to `.sizes` file.
 end
@@ -112,6 +113,8 @@ function show_example!()
 	This is an example text with $x$, $x_2$, $x^3$ and $u \cdot v$.
 	
 	$$ y = \frac{a + 1}{b + 1^2} $$
+
+	We could also write $\frac{z}{2}$ where $z = \{ 1, 2, ..., u \}$.
 
 	"""
 	out_path = joinpath(homedir(), "git", "notes", "content", "docs", "jmd", "example.md")

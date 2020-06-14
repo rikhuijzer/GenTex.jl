@@ -142,30 +142,35 @@ function determine_param(eq::Equation, eq_image)::Array{String,1}
 	(w, h) = dimensions(im_path)
 	width = round(eq.scale * w; digits=3)
 	height = round(eq.scale * h; digits=3)
-	
-	return [
+	params = [
 		"src=\"$(link)\"",
 		"width=\"$(width)\"",
 		"height=\"$(height)\""
 	]
+	if eq.type == "inline"
+		valign = round(eq.scale * (eq_image.mydepth); digits=3)
+		style = "style=\"margin:0;vertical-align:-$(valign)px\""
+		push!(params, style)
+	end
+	return params
 end
 
 # Removed for debugging purposes:
 # @memoize 
-function _eq!(eq::Equation, class::String)
+function _eq!(eq::Equation)
 	# TODO: Pass this dir.
 	im_dir = joinpath(homedir(), "git", "notes", "static", "latex")
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	eq_image = latex_im!(eq, im_dir)
 	param = determine_param(eq, eq_image)
-	img = """<img class="$(class)" $(join(param, ' '))>"""
+	img = """<img $(join(param, ' '))>"""
 	startswith(eq.text, "\$\$") ? "<center>$(img)</center>" : img
 end
 
 display_eq!(eq::Equation)::String = 
-	_eq!(eq, "display-math")
+	_eq!(eq)
 export display_eq!
 inline_eq!(eq::Equation)::String =
-	_eq!(eq, "inline-math")
+	_eq!(eq)
 export inline_eq!
 
