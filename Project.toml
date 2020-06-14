@@ -1,7 +1,7 @@
 name = "GenTex"
 uuid = "c7f5e78c-a7e6-11ea-3c41-edaefc2f1619"
 authors = ["Rik <rikhuijzer@pm.me>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
