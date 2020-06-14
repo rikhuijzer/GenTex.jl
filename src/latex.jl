@@ -8,6 +8,7 @@ preamble = raw"""
 	\documentclass[12pt]{article}
 	\nonstopmode
 	\usepackage{amsmath}
+	\usepackage{amssymb}
 	\pagestyle{empty}"""
 
 function wrap_eq(eq::Equation)::String
@@ -155,9 +156,7 @@ function determine_param(eq::Equation, eq_image)::Array{String,1}
 	return params
 end
 
-# Removed for debugging purposes:
-# @memoize 
-function _eq!(eq::Equation)
+@memoize function _eq!(eq::Equation)
 	# TODO: Pass this dir.
 	im_dir = joinpath(homedir(), "git", "notes", "static", "latex")
 	if !(isdir(im_dir)); mkdir(im_dir) end
