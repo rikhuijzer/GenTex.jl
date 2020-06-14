@@ -12,8 +12,11 @@ using Test
 	end
 
 	@testset "evaluate" begin
-		@test startswith(substitute_latex(raw"$$x_y$$"), "<img")
-		@test startswith(substitute_latex(raw"$x$"), "<img")
-		@test startswith(substitute_latex(raw"$$\text{mean} = 1$$"), "<img")
+		tmpdir = tempname() * '/'
+		mkdir(tmpdir)
+		@test startswith(substitute_latex(raw"$$x_y$$", 1, tmpdir), "<center")
+		@test startswith(substitute_latex(raw"$x$", 1, tmpdir), "<img")
+		@test startswith(substitute_latex(raw"$$\text{mean} = 1$$", 1, tmpdir), "<center")
+		rm(tmpdir, recursive=true)
 	end
 end

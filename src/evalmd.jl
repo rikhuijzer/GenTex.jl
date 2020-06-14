@@ -20,6 +20,8 @@ struct InlineEquationImage
 	mydepth::Float64 # Depth according to `.sizes` file.
 end
 
+default_im_dir() = joinpath(homedir(), "git", "notes", "static", "latex")
+
 regexes = Dict(
 	"display" => r"\$\$[^\$]+?\$\$", # For example, $$ x $$.
 	"inline" => r"(?<!\$)\$(?!\$).{1}.*?\$" # For example, $x$.
@@ -79,23 +81,24 @@ function splitmd(md::AbstractString)
 end
 export splitmd
 
-function substitute_latex(md::AbstractString, scale::Float64)
+function substitute_latex(md::AbstractString, scale::Number, im_dir)
 	parts = splitmd(md)
 	for (i, part) in enumerate(parts)
 		if startswith(part, raw"$$")	
-			parts[i] = display_eq!(Equation(part, scale, "display"))
+			parts[i] = display_eq!(Equation(part, scale, "display"), im_dir)
 		elseif startswith(part, raw"$")
-			parts[i] = inline_eq!(Equation(part, scale, "inline"))
+			parts[i] = inline_eq!(Equation(part, scale, "inline"), im_dir)
 		end
 	end
 	join(parts)
 end
 export substitute_latex
 
-function substitute_latex!(frompath, topath; scale=1.0)::String
+function substitute_latex!(frompath, topath; scale=1.0, im_dir="")::String
+	if im_dir == ""; im_dir = default_im_dir(); end
 	io = open(frompath, "r") 
 	before = read(open(frompath, "r"), String)
-	after = substitute_latex(before, scale)
+	after = substitute_latex(before, scale, im_dir)
 	close(io)
 	open(topath, "w") do io
 		write(io, after)

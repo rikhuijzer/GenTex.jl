@@ -156,9 +156,7 @@ function determine_param(eq::Equation, eq_image)::Array{String,1}
 	return params
 end
 
-@memoize function _eq!(eq::Equation)
-	# TODO: Pass this dir.
-	im_dir = joinpath(homedir(), "git", "notes", "static", "latex")
+@memoize function _eq!(eq::Equation, im_dir)
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	eq_image = latex_im!(eq, im_dir)
 	param = determine_param(eq, eq_image)
@@ -166,10 +164,9 @@ end
 	startswith(eq.text, "\$\$") ? "<center>$(img)</center>" : img
 end
 
-display_eq!(eq::Equation)::String = 
-	_eq!(eq)
+display_eq!(eq::Equation, im_dir)::String = 
+	_eq!(eq, im_dir)
 export display_eq!
-inline_eq!(eq::Equation)::String =
-	_eq!(eq)
+inline_eq!(eq::Equation, im_dir)::String =
+	_eq!(eq, im_dir)
 export inline_eq!
-
