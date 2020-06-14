@@ -1,7 +1,5 @@
 # GenTex
 
-**This project is in beta. I know whether I am able to finish it before September 2020.**
-
 Generate LaTeX images which can be added to Markdown or HTML.
 This project is similar to and based on <https://github.com/liamoc/latex-formulae>.
 Benefits of rendering LaTeX to images are to
@@ -17,10 +15,20 @@ julia> dev GenTex.jl
 
 julia> using GenTex
 
-julia> substitute_latex!(frompath, topath)
+julia> frompath = <some path to a file with inline equations ($...$) and display equations ($$...$$)>
+
+julia> topath = <some path to where the output file should be>
+
+julia> scale = <scaling factor to apply to the images>
+
+julia> im_dir = <location to store the generated LaTeX images>
+
+julia> substitute_latex!(frompath, topath, scale, im_dir)
+File written - 12:52:32
 ```
 
 ## Development
+These are some notes which I should move somewhere else.
 In Julia it seems to be the idea that you manually start the REPL in combination with Revise.
 
 ### Create a new package
@@ -64,4 +72,3 @@ julia> using Pkg; Pkg.activate("SomePkg")
 
 pkg> add SomePkg
 ```
-
