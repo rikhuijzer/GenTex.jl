@@ -2,6 +2,7 @@ struct Equation
 	text::AbstractString
 	scale::Float64
 	type::String # Either `display` or `inline`.
+	extra_packages::String # For example, \usepackage{tikz}.
 end
 export Equation
 
@@ -90,10 +91,10 @@ function substitute_latex(md::AbstractString, scale::Number, im_dir)
 	for (i, part) in enumerate(parts)
 		if startswith(part, raw"$$")	
 			(parts[i], cache) = 
-				display_eq!(Equation(part, scale, "display"), im_dir, cache)
+				display_eq!(Equation(part, scale, "display", ""), im_dir, cache)
 		elseif startswith(part, raw"$")
 			(parts[i], cache) = 
-				inline_eq!(Equation(part, scale, "inline"), im_dir, cache)
+				inline_eq!(Equation(part, scale, "inline", ""), im_dir, cache)
 		end
 	end
 	if length(cache.images) != initial_length

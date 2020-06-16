@@ -3,18 +3,19 @@ using Dates
 floatregex = "([0-9]*[.])?[0-9]+"
 match2num(m::RegexMatch) = parse(Float64, match(Regex(floatregex), m.match).match)
 
-preamble = raw"""
-	\documentclass[12pt]{article}
-	\nonstopmode
-	\usepackage{amsmath}
-	\usepackage{amssymb}
-	\pagestyle{empty}"""
+preamble(extra_packages="") = """
+	\\documentclass[12pt]{article}
+	\\nonstopmode
+	\\usepackage{amsmath}
+	\\usepackage{amssymb}
+	$(extra_packages)
+	\\pagestyle{empty}"""
 
 function wrap_eq(eq::Equation)::String
 	if eq.type == "display"
 		# The `lrbox` errors on display math (`$$ ... $$`).
 		return string(
-			preamble, """
+			preamble(eq.extra_packages), """
 			\\begin{document}
 			$(eq.text)
 			\\end{document}"""
@@ -23,8 +24,7 @@ function wrap_eq(eq::Equation)::String
 		# Using the `lrbox` to determine the baseline and resulting depth.
 		# Source: http://mactextoolbox.sourceforge.net/articles/baseline.html
 		return string(
-			preamble, 
-			raw"""
+			preamble(eq.extra_packages), raw"""
 			\newsavebox{\mybox}
 			\newlength{\mywidth}
 			\newlength{\myheight}
@@ -166,7 +166,7 @@ function _eq!(eq::Equation, im_dir, cache)::Tuple{String,Cache}
 	end
 	param = determine_param(eq_image)
 	img = """<img $(join(param, ' '))>"""
-	s = startswith(eq.text, "\$\$") ? "<center>$(img)</center>" : img
+	s = eq.type == "display" ? "<center>$(img)</center>" : img
 	(s, cache)
 end
 

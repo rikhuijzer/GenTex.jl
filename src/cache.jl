@@ -5,6 +5,8 @@ struct Cache
 	images::Array{Any,1} # Should be a more specific type.
 end
 
+new_cache()::Cache = Cache(1.6, [])	
+
 function load_cache(scale::Number, im_dir::AbstractString)::Cache
 	if isfile(cache_path(im_dir))
 		io = open(cache_path(im_dir), "r") 
@@ -28,7 +30,7 @@ clear_cache!(im_dir) = rm(cache_path(im_dir))
 function check_cache(cache::Cache, eq::Equation)::Union{DisplayImage,InlineImage,Nothing}
 	# Am unable to reproduce this in the test, but do not remove `are_equal`.
 	are_equal(eq1::Equation, eq2::Equation)::Bool =
-		eq1.text == eq2.text && eq1.scale == eq2.scale && eq1.type == eq2.type
+		eq1.text == eq2.text && eq1.scale == eq2.scale && eq1.type == eq2.type && eq1.extra_packages == eq1.extra_packages
 
 	index = findfirst(eq_image -> are_equal(eq_image.eq, eq), cache.images)
 	if index == nothing

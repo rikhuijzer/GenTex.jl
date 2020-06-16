@@ -10,14 +10,14 @@ DisplayImage = GenTex.DisplayImage
 
 	scale = 1.0
 	cache = GenTex.load_cache(scale, tmpdir)
-	eq = Equation(raw"$x$", scale, "inline")
+	eq = Equation(raw"$x$", scale, "inline", "")
 	eq_image = DisplayImage(eq, tmpdir, "hash.svg")
 	@test GenTex.check_cache(cache, eq) == nothing
 	cache = GenTex.update_cache(cache, eq_image)
 	@test GenTex.check_cache(cache, eq) == eq_image
-	eq2 = Equation(raw"$x$", scale, "display")
+	eq2 = Equation(raw"$x$", scale, "display", "")
 	@test GenTex.check_cache(cache, eq2) == nothing
-	eq3 = Equation(raw"$x$", scale, "inline")
+	eq3 = Equation(raw"$x$", scale, "inline", "")
 	@test GenTex.check_cache(cache, eq3) == eq_image
 	
 	GenTex.write_cache!(cache, tmpdir)
