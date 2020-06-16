@@ -8,9 +8,11 @@ Benefits of rendering LaTeX to images are to
 - allow full LaTeX capabilities (for example, the `tikz` package).
 
 The project uses manually defined caching since `Memoize.jl` wasn't working.
-The benefit of the manual cache is that the cache is available even for fresh Julia instances.
+The benefit of the manual cache is that the cache is instantly available, even for fresh Julia instances.
 
 ## Demo
+**GitHub seems to strip vertical alignment settings such as `<img ... style="margin:0;vertical-align:-6.621px" ...>`; for an example with proper alignment see <https://huijzer.xyz/images/gentex-example.png>.**
+
 This is an example text with <img src="https://huijzer.xyz/latex/12197389782113746666.svg" width="11.2" height="9.6" style="margin:0;vertical-align:-0.0px">, <img src="https://huijzer.xyz/latex/5319274704649611724.svg" width="17.6" height="12.8" style="margin:0;vertical-align:-2.88px">, <img src="https://huijzer.xyz/latex/6852490030217100688.svg" width="17.6" height="16.0" style="margin:0;vertical-align:-0.0px"> and <img src="https://huijzer.xyz/latex/4264404676620526747.svg" width="35.2" height="9.6" style="margin:0;vertical-align:-0.0px">.
 
 <center><img src="https://huijzer.xyz/latex/2495613752529779156.svg" width="86.4" height="41.6"></center>
@@ -22,7 +24,7 @@ From 'Introduction to Mathematical Statistics':
 **Example 1.1.3.** Let <img src="https://huijzer.xyz/latex/12538622003180737024.svg" width="16.0" height="16.0" style="margin:0;vertical-align:-0.0px"> denote the sample space of Example 1.1.2 and let <img src="https://huijzer.xyz/latex/17406682816213213371.svg" width="16.0" height="14.4" style="margin:0;vertical-align:-0.0px"> be the collection of every ordered pair of <img src="https://huijzer.xyz/latex/12538622003180737024.svg" width="16.0" height="16.0" style="margin:0;vertical-align:-0.0px"> for which the sum of the pair is equal to seven. Thus <img src="https://huijzer.xyz/latex/18159528184481867901.svg" width="352.0" height="20.8" style="margin:0;vertical-align:-4.8px">. Suppose that the dice are cast <img src="https://huijzer.xyz/latex/3935298798545812815.svg" width="70.4" height="16.0" style="margin:0;vertical-align:-0.0px"> times and let <img src="https://huijzer.xyz/latex/15637131451191394373.svg" width="9.6" height="19.2" style="margin:0;vertical-align:-3.733px"> denote the frequency of a sum of seven. Suppose that <img src="https://huijzer.xyz/latex/5057383012830839949.svg" width="28.8" height="16.0" style="margin:0;vertical-align:-0.0px"> casts result in <img src="https://huijzer.xyz/latex/10869177412910497149.svg" width="54.4" height="19.2" style="margin:0;vertical-align:-3.733px">. Then the relative frequency with which the outcome was <img src="https://huijzer.xyz/latex/17406682816213213371.svg" width="16.0" height="14.4" style="margin:0;vertical-align:-0.0px"> is <img src="https://huijzer.xyz/latex/15925760637405286524.svg" width="144.0" height="25.6" style="margin:0;vertical-align:-6.621px">. Thus we might associate with <img src="https://huijzer.xyz/latex/17406682816213213371.svg" width="16.0" height="14.4" style="margin:0;vertical-align:-0.0px"> a number <img src="https://huijzer.xyz/latex/16786918996169151623.svg" width="11.2" height="14.4" style="margin:0;verti
 cal-align:-3.733px"> that is close to <img src="https://huijzer.xyz/latex/3783830788227099719.svg" width="33.6" height="16.0" style="margin:0;vertical-align:-0.0px">, and <img src="https://huijzer.xyz/latex/16786918996169151623.svg" width="11.2" height="14.4" style="margin:0;vertical-align:-3.733px"> would be called the probability of the event <img src="https://huijzer.xyz/latex/17406682816213213371.svg" width="16.0" height="14.4" style="margin:0;vertical-align:-0.0px">. <img src="https://huijzer.xyz/latex/2189428904744406416.svg" width="14.4" height="14.4" style="margin:0;vertical-align:-0.0px">
 
-And a `Tikz` example:
+And a `tikz` example:
 <center><img src="https://huijzer.xyz/latex/13423659640303949517.svg" width="296.0" height="83.2"></center>
 
 ## Usage
