@@ -136,36 +136,41 @@ function dimensions(svg_path::AbstractString)::Tuple{Float64,Float64}
 	return (match2num(w), match2num(h))
 end
 
-function determine_param(eq::Equation, eq_image)::Array{String,1}
+function determine_param(eq_image)::Array{String,1}
 	link = '/' * joinpath("latex", eq_image.im_name)
 	im_path = joinpath(eq_image.im_dir, eq_image.im_name)
 	(w, h) = dimensions(im_path)
-	width = round(eq.scale * w; digits=3)
-	height = round(eq.scale * h; digits=3)
+	width = round(eq_image.eq.scale * w; digits=3)
+	height = round(eq_image.eq.scale * h; digits=3)
 	params = [
 		"src=\"$(link)\"",
 		"width=\"$(width)\"",
 		"height=\"$(height)\""
 	]
-	if eq.type == "inline"
-		valign = round(eq.scale * (eq_image.mydepth); digits=3)
+	if eq_image.eq.type == "inline"
+		valign = round(eq_image.eq.scale * (eq_image.mydepth); digits=3)
 		style = "style=\"margin:0;vertical-align:-$(valign)px\""
 		push!(params, style)
 	end
 	return params
 end
 
-function _eq!(eq::Equation, im_dir)
-	if !(isdir(im_dir)); mkdir(im_dir) end
-	eq_image = latex_im!(eq, im_dir)
-	param = determine_param(eq, eq_image)
+function _eq!(eq::Equation, im_dir, cache)::Tuple{String,Cache}
+	# @show eq
+	# @show map(eq_image -> eq_image.eq, cache.images)
+	eq_image = check_cache(cache, eq)
+	# @show eq_image
+	if eq_image == nothing
+		eq_image = latex_im!(eq, im_dir)
+		cache = update_cache(cache, eq_image)
+	end
+	param = determine_param(eq_image)
 	img = """<img $(join(param, ' '))>"""
-	startswith(eq.text, "\$\$") ? "<center>$(img)</center>" : img
+	s = startswith(eq.text, "\$\$") ? "<center>$(img)</center>" : img
+	(s, cache)
 end
 
-display_eq!(eq::Equation, im_dir)::String = 
-	_eq!(eq, im_dir)
+display_eq!(eq::Equation, im_dir, cache) =_eq!(eq, im_dir, cache)
 export display_eq!
-inline_eq!(eq::Equation, im_dir)::String =
-	_eq!(eq, im_dir)
+inline_eq!(eq::Equation, im_dir, cache) =	_eq!(eq, im_dir, cache)
 export inline_eq!

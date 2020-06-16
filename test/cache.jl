@@ -15,6 +15,10 @@ DisplayImage = GenTex.DisplayImage
 	@test GenTex.check_cache(cache, eq) == nothing
 	cache = GenTex.update_cache(cache, eq_image)
 	@test GenTex.check_cache(cache, eq) == eq_image
+	eq2 = Equation(raw"$x$", scale, "display")
+	@test GenTex.check_cache(cache, eq2) == nothing
+	eq3 = Equation(raw"$x$", scale, "inline")
+	@test GenTex.check_cache(cache, eq3) == eq_image
 	
 	GenTex.write_cache!(cache, tmpdir)
 	cache = GenTex.load_cache(scale, tmpdir)

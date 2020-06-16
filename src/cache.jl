@@ -2,7 +2,7 @@ import Serialization
 
 struct Cache
 	scale::Number
-	images::Array{Union{DisplayImage,InlineImage},1}
+	images::Array{Any,1} # Should be a more specific type.
 end
 
 function load_cache(scale::Number, im_dir::AbstractString)::Cache
@@ -26,7 +26,11 @@ end
 clear_cache!(im_dir) = rm(cache_path(im_dir))
 
 function check_cache(cache::Cache, eq::Equation)::Union{DisplayImage,InlineImage,Nothing}
-	index = findfirst(eq_image -> eq_image.eq == eq, cache.images)
+	# Am unable to reproduce this in the test, but do not remove `are_equal`.
+	are_equal(eq1::Equation, eq2::Equation)::Bool =
+		eq1.text == eq2.text && eq1.scale == eq2.scale && eq1.type == eq2.type
+
+	index = findfirst(eq_image -> are_equal(eq_image.eq, eq), cache.images)
 	if index == nothing
 		return nothing
 	else

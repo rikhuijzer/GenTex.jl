@@ -83,17 +83,22 @@ end
 export splitmd
 
 function substitute_latex(md::AbstractString, scale::Number, im_dir)
+	if !(isdir(im_dir)); mkdir(im_dir) end
 	cache = load_cache(scale, im_dir)
+	initial_length = length(cache.images)
 	parts = splitmd(md)
 	for (i, part) in enumerate(parts)
 		if startswith(part, raw"$$")	
-			parts[i] = display_eq!(Equation(part, scale, "display"), im_dir)
+			(parts[i], cache) = 
+				display_eq!(Equation(part, scale, "display"), im_dir, cache)
 		elseif startswith(part, raw"$")
-			parts[i] = inline_eq!(Equation(part, scale, "inline"), im_dir)
+			(parts[i], cache) = 
+				inline_eq!(Equation(part, scale, "inline"), im_dir, cache)
 		end
 	end
-	# if current_cache != cache
-	write_cache!(cache, im_dir)
+	if length(cache.images) != initial_length
+		write_cache!(cache, im_dir)
+	end
 	join(parts)
 end
 export substitute_latex
