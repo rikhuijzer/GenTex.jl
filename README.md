@@ -7,6 +7,9 @@ Benefits of rendering LaTeX to images are to
 - avoid JavaScript on the client-side, and
 - allow full LaTeX capabilities (for example, the `tikz` package).
 
+The project uses manually defined caching since `Memoize.jl` wasn't working.
+The benefit of the manual cache is that the cache is available even for fresh Julia instances.
+
 ## Usage
 Clone the repository to `~.julia/dev` and start the Julia REPL via `julia`.
 

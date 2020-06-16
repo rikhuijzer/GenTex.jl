@@ -5,13 +5,13 @@ struct Equation
 end
 export Equation
 
-struct DisplayEquationImage
+struct DisplayImage
 	eq::Equation
 	im_dir::AbstractString
 	im_name::AbstractString
 end
 
-struct InlineEquationImage
+struct InlineImage
 	eq::Equation
 	im_dir::AbstractString
 	im_name::AbstractString
@@ -19,8 +19,9 @@ struct InlineEquationImage
 	myheight::Float64 # Height according to `.sizes` file.
 	mydepth::Float64 # Depth according to `.sizes` file.
 end
-
+	
 default_im_dir() = joinpath(homedir(), "git", "notes", "static", "latex")
+cache_path(im_dir) = joinpath(im_dir, "cache.txt")
 
 regexes = Dict(
 	"display" => r"\$\$[^\$]+?\$\$", # For example, $$ x $$.
@@ -82,6 +83,7 @@ end
 export splitmd
 
 function substitute_latex(md::AbstractString, scale::Number, im_dir)
+	cache = load_cache(scale, im_dir)
 	parts = splitmd(md)
 	for (i, part) in enumerate(parts)
 		if startswith(part, raw"$$")	
@@ -90,11 +92,13 @@ function substitute_latex(md::AbstractString, scale::Number, im_dir)
 			parts[i] = inline_eq!(Equation(part, scale, "inline"), im_dir)
 		end
 	end
+	# if current_cache != cache
+	write_cache!(cache, im_dir)
 	join(parts)
 end
 export substitute_latex
 
-function substitute_latex!(frompath, topath; scale=1.0, im_dir="")::String
+function substitute_latex!(frompath, topath; scale=1.6, im_dir="")::String
 	if im_dir == ""; im_dir = default_im_dir(); end
 	io = open(frompath, "r") 
 	before = read(open(frompath, "r"), String)

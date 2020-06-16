@@ -1,5 +1,4 @@
 using Dates
-using Memoize
 
 floatregex = "([0-9]*[.])?[0-9]+"
 match2num(m::RegexMatch) = parse(Float64, match(Regex(floatregex), m.match).match)
@@ -52,7 +51,7 @@ function wrap_eq(eq::Equation)::String
 	end
 end
 
-@memoize function check_latex()
+function check_latex()
 	try 
 		run(pipeline(`pdflatex --help`, devnull))
 	catch 
@@ -118,10 +117,10 @@ function latex_im!(eq::Equation, im_dir::String)
 	mv(file("svg"), im_path, force=true)
 	cd(old_pwd)
 	if eq.type == "display"
-		eq_image = DisplayEquationImage(eq, im_dir, im_name)
+		eq_image = DisplayImage(eq, im_dir, im_name)
 	else
 		(height, depth) = get_sizes(file("sizes"))
-		eq_image =  InlineEquationImage(eq, im_dir, im_name, height, depth)
+		eq_image =  InlineImage(eq, im_dir, im_name, height, depth)
 	end
 	rm(tmpdir, recursive=true)
 	return eq_image
@@ -156,7 +155,7 @@ function determine_param(eq::Equation, eq_image)::Array{String,1}
 	return params
 end
 
-@memoize function _eq!(eq::Equation, im_dir)
+function _eq!(eq::Equation, im_dir)
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	eq_image = latex_im!(eq, im_dir)
 	param = determine_param(eq, eq_image)

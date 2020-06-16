@@ -8,7 +8,9 @@ This is an example text with $x$, $x_2$, $x^3$ and $u \cdot v$.
 $$ y = \frac{a + 1}{b + 1^2} $$
 
 We could also write $\frac{z}{2}$ where $z = \{ 1, 2, ..., u \}$.
+"""
 
+comment = raw"""
 From 'Introduction to Mathematical Statistics':
 
 **Example 1.1.3.** Let $C$ denote the sample space of Example 1.1.2 and let $B$ be the collection of every ordered pair of $C$ for which the sum of the pair is equal to seven. Thus $B = \{ (1,6), (2,5), (3,4), (4,3), (5,2), (6,1) \}$. Suppose that the dice are cast $N = 400$ times and let $f$ denote the frequency of a sum of seven. Suppose that $400$ casts result in $f = 60$. Then the relative frequency with which the outcome was $B$ is $f / N = \frac{60}{400} = 0.15$. Thus we might associate with $B$ a number $p$ that is close to $0.15$, and $p$ would be called the probability of the event $B$. $\blacksquare$
