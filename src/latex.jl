@@ -128,9 +128,14 @@ end
 export latex_im!
 
 function dimensions(svg_path::AbstractString)::Tuple{Float64,Float64}
-	io = open(svg_path, "r")
-	svg = read(io, String)
-	close(io)
+    svg = ""
+    try 
+        io = open(svg_path, "r")
+        svg = read(io, String)
+        close(io)
+	catch 
+		throw(ErrorException("Failed to read file. Is the cache invalid?"))
+	end
 	w = match(Regex("width='$(floatregex)pt'"), svg)
 	h = match(Regex("height='$(floatregex)pt'"), svg)
 	return (match2num(w), match2num(h))
