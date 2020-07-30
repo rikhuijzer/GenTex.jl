@@ -1,4 +1,4 @@
-# GenTex
+# GenTeX
 
 Generate LaTeX images which can be added to Markdown or HTML.
 This project is similar to and based on <https://github.com/liamoc/latex-formulae>.
@@ -31,9 +31,9 @@ And a `tikz` example:
 Clone the repository to `~.julia/dev` and start the Julia REPL via `julia`.
 
 ```
-julia> dev GenTex.jl
+julia> dev GenTeX.jl
 
-julia> using GenTex
+julia> using GenTeX
 
 julia> frompath = <some path to a file with inline equations ($...$) and display equations ($$...$$)>
 
