@@ -1,4 +1,4 @@
-module GenTex
+module GenTeX
 
 include("evalmd.jl")
 include("cache.jl")

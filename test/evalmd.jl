@@ -1,14 +1,14 @@
-using GenTex
+using GenTeX
 using Test
 
 @testset "evalmd" begin
 	@testset "split" begin
-		@test GenTex.ranges(raw"a $x$ and $y$", GenTex.regexes["inline"]) == [3:5, 11:13]
-		@test GenTex.hits(raw"$$x$$, $y$") == [1:5, 8:10]
+		@test GenTeX.ranges(raw"a $x$ and $y$", GenTeX.regexes["inline"]) == [3:5, 11:13]
+		@test GenTeX.hits(raw"$$x$$, $y$") == [1:5, 8:10]
 		@test splitmd(raw"a $b$ and $$c$$") == ["a ", "\$b\$", " and ", "\$\$c\$\$"]
 		@test splitmd(raw"$a$ b") == [raw"$a$", " b"]
-		@test GenTex.allranges(" ") == [1:1]
-		@test GenTex.allranges("") == [1:0]
+		@test GenTeX.allranges(" ") == [1:1]
+		@test GenTeX.allranges("") == [1:0]
 	end
 
 	@testset "evaluate" begin

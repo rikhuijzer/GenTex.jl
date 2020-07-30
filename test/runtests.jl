@@ -1,6 +1,6 @@
 using Test
 
-@testset "GenTex" begin
+@testset "GenTeX" begin
 	include("evalmd.jl")
 	include("latex.jl")
 	include("cache.jl")

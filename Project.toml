@@ -1,7 +1,7 @@
-name = "GenTex"
-uuid = "c7f5e78c-a7e6-11ea-3c41-edaefc2f1619"
-authors = ["Rik <rikhuijzer@pm.me>"]
-version = "0.2.2"
+name = "GenTeX"
+uuid = "986b9465-75d6-44a0-94a2-e5aa8586ae9d"
+authors = ["Rik <t.h.huijzer@rug.nl>"]
+version = "0.2.3"
 
 [deps]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"

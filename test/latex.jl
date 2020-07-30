@@ -1,4 +1,4 @@
-using GenTex
+using GenTeX
 using Test
 
 @testset "LaTeX" begin
