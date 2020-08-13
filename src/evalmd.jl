@@ -25,7 +25,7 @@ default_im_dir() = joinpath(homedir(), "git", "notes", "static", "latex")
 cache_path(im_dir) = joinpath(im_dir, "cache.txt")
 
 regexes = Dict(
-	"display" => r"\$\$[^\$]+?\$\$", # For example, $$ x $$.
+	"display" => r"\$\$[\s\S]*?\$\$", # For example, $$ x $$.
 	"inline" => r"(?<!\$)\$(?!\$).{1}.*?\$" # For example, $x$.
 )
 
