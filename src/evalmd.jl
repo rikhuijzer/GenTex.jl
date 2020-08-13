@@ -83,7 +83,7 @@ function splitmd(md::AbstractString)
 end
 export splitmd
 
-function substitute_latex(md::AbstractString, scale::Number, im_dir)
+function substitute_latex(md::AbstractString, scale::Number, im_dir, extra_packages)
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	cache = load_cache(scale, im_dir)
 	initial_length = length(cache.images)
@@ -91,10 +91,10 @@ function substitute_latex(md::AbstractString, scale::Number, im_dir)
 	for (i, part) in enumerate(parts)
 		if startswith(part, raw"$$")	
 			(parts[i], cache) = 
-				display_eq!(Equation(part, scale, "display", ""), im_dir, cache)
+				display_eq!(Equation(part, scale, "display", extra_packages), im_dir, cache)
 		elseif startswith(part, raw"$")
 			(parts[i], cache) = 
-				inline_eq!(Equation(part, scale, "inline", ""), im_dir, cache)
+				inline_eq!(Equation(part, scale, "inline", extra_packages), im_dir, cache)
 		end
 	end
 	if length(cache.images) != initial_length
@@ -104,11 +104,11 @@ function substitute_latex(md::AbstractString, scale::Number, im_dir)
 end
 export substitute_latex
 
-function substitute_latex!(frompath, topath; scale=1.6, im_dir="")::String
+function substitute_latex!(frompath, topath; scale=1.6, im_dir="", extra_packages="")::String
 	if im_dir == ""; im_dir = default_im_dir(); end
 	io = open(frompath, "r") 
 	before = read(open(frompath, "r"), String)
-	after = substitute_latex(before, scale, im_dir)
+	after = substitute_latex(before, scale, im_dir, extra_packages)
 	close(io)
 	open(topath, "w") do io
 		write(io, after)
