@@ -103,7 +103,7 @@ function latex_im!(eq::Equation, im_dir::String)
 	end
 	pdf2svg = `dvisvgm --pdf $(file("crop.pdf"))`
 	try
-		run(pipeline(pdf2svg, stdout=devnull, stderr=devnull))
+		run(pipeline(pdf2svg)) # stdout=devnull, stderr=devnull))
 	catch e
 		throw(ErrorException("Failed to run dvisvgm. Is dvisvgm installed?"))
 	end
