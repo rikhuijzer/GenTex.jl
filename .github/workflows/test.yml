@@ -1,0 +1,36 @@
+name: test
+
+on:
+    push: 
+        branches:
+            - master
+        tags: '*'
+    pull_request:
+
+jobs:
+  test:
+    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        version:
+          - '1.5'
+        os:
+          - ubuntu-latest
+        arch:
+          - x64
+    steps:
+      - uses: actions/checkout@v1
+      - uses: julia-actions/julia-buildpkg@latest
+        # Using Nix since the version of `dvisvgm` in the Ubuntu package is too old.
+      - name: Instal Nix
+        uses: cachix/install-nix-action@v10
+        with:
+            nix_path: nixpkgs=channel:nixos-20.03
+      - name: Fetch LaTeX via Nix
+        run: nix-shell --run "bash"
+      - uses: julia-actions/setup-julia@latest
+        with:
+          version: ${{ matrix.version }}
+          arch: ${{ matrix.arch }}
+      - uses: julia-actions/julia-runtest@latest
