@@ -1,6 +1,11 @@
-# GenTeX
+<h1 align="center">
+  GenTeX
+</h1>
 
-Generate LaTeX images to be used with Markdown or HTML.
+<h3 align="center">
+  Generate LaTeX images to be used with Markdown or HTML
+</h3>
+
 This project is similar to, and based on, <https://github.com/liamoc/latex-formulae>.
 Benefits of rendering LaTeX to images are to
 
