@@ -28,7 +28,9 @@ jobs:
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      - uses: julia-actions/julia-buildpkg@latest
+
+      - name: Build GenTeX.jl
+        uses: julia-actions/julia-buildpkg@latest
 
         # Using the Nix package manager since the version of `dvisvgm` in Ubuntu is too old.
       - name: Install Nix 
@@ -39,7 +41,7 @@ jobs:
         # See https://github.com/rikhuijzer/test-caching.
       - name: Cache Nix store
         id: cache-nix-store
-        using: actions/cache@v2.1.0
+        uses: actions/cache@v2.1.0
         with:
             path: |
                 ~/nix/store
