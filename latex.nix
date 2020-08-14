@@ -3,9 +3,8 @@
 let
   inherit (nixpkgs) pkgs;
   myTex = with pkgs; texlive.combine {
-    inherit (texlive) scheme-minimal dvisvgm amsfonts pdfcrop pdflatex stmaryrd;
+    inherit (texlive) scheme-basic dvisvgm amsfonts pdfcrop stmaryrd;
   };
 in [
-  pkgs.imagemagick
   myTex
 ]
