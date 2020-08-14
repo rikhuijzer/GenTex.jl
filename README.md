@@ -3,7 +3,7 @@
 </h1>
 
 <h3 align="center">
-  Generate LaTeX images to be used with Markdown or HTML
+  Generate LaTeX images for websites
 </h3>
 
 This project is similar to, and based on, <https://github.com/liamoc/latex-formulae>.
