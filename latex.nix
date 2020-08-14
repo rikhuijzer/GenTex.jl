@@ -6,7 +6,6 @@ let
     inherit (texlive) scheme-minimal dvisvgm amsfonts pdfcrop stmaryrd;
   };
 in [
-  pkgs.ghostscript
   pkgs.imagemagick
   myTex
 ]
