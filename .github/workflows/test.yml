@@ -20,15 +20,50 @@ jobs:
         arch:
           - x64
     steps:
-      - uses: actions/checkout@v1
-      - uses: julia-actions/julia-buildpkg@latest
-      - uses: julia-actions/setup-julia@latest
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-        # Using Nix since the version of `dvisvgm` in the Ubuntu package is too old.
-      - uses: cachix/install-nix-action@v10
+      - uses: julia-actions/julia-buildpkg@latest
+
+        # Using the Nix package manager since the version of `dvisvgm` in Ubuntu is too old.
+      - name: Install Nix 
+        uses: cachix/install-nix-action@v10
         with:
-            nix_path: nixpkgs=channel:nixos-unstable
-      - run: nix-env --install --file latex.nix
-      - uses: julia-actions/julia-runtest@latest
+            nix_path: nixpkgs=channel:nixos-20.03
+
+        # See https://github.com/rikhuijzer/test-caching.
+      - name: Cache Nix store
+        id: cache-nix-store
+        using: actions/cache@v2.1.0
+        with:
+            path: |
+                ~/nix/store
+                ~/nix/bin
+            key: v1
+
+      - name: Install LaTeX
+        env:
+          CACHE_HIT: ${{ steps.cache-nix-store.outputs.cache-hit }}
+        run: |
+          NIX_BIN=/nix/var/nix/profiles/per-user/runner/profile/bin
+          NIX_STORE=/nix/store
+          if [[ "$CACHE_HIT" != 'true' ]]; then
+            nix-env --install --file latex.nix
+            mkdir -p ~/nix/store
+            mkdir -p ~/nix/bin
+            sudo cp --force --recursive $NIX_STORE/* ~/nix/store/
+            sudo cp --verbose --force --recursive $NIX_BIN/* ~/nix/bin/
+          else
+            sudo mkdir -p $NIX_STORE
+            sudo mkdir -p $NIX_BIN
+            sudo cp --force --recursive ~/nix/store/* $NIX_STORE/
+            sudo cp --force --recursive ~/nix/bin/* $NIX_BIN/
+          fi
+
+      - name: Test
+        uses: julia-actions/julia-runtest@latest
