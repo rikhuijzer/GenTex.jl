@@ -26,7 +26,7 @@ jobs:
       - name: Instal Nix
         uses: cachix/install-nix-action@v10
         with:
-            nix_path: nixpkgs=channel:nixos-20.03
+            nix_path: nixpkgs=channel:nixos-unstable
       - name: Install LaTeX via Nix
         run: nix-env --install --file latex.nix
       - uses: julia-actions/setup-julia@latest

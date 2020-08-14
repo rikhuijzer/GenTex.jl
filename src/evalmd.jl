@@ -83,7 +83,7 @@ function splitmd(md::AbstractString)
 end
 export splitmd
 
-function substitute_latex(md::AbstractString, scale::Number, im_dir, extra_packages)
+function substitute_latex(md::AbstractString, scale::Number, im_dir; extra_packages="")
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	cache = load_cache(scale, im_dir)
 	initial_length = length(cache.images)
