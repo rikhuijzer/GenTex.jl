@@ -46,6 +46,7 @@ jobs:
             path: |
                 ~/nix/store
                 ~/nix/bin
+            # The files in this cache don't change, so we don't need `hashFiles`.
             key: v1
 
       - name: Install LaTeX
