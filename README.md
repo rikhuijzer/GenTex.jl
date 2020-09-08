@@ -6,6 +6,7 @@
   Generate LaTeX images for websites
 </h3>
 
+
 This project is similar to, and based on, <https://github.com/liamoc/latex-formulae>.
 Benefits of rendering LaTeX to images are to
 
