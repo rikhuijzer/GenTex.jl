@@ -1,4 +1,4 @@
-name: test
+name: CI
 
 on: [push, pull_request]
 
@@ -36,3 +36,22 @@ jobs:
 
       - name: Test
         uses: julia-actions/julia-runtest@latest
+
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@latest
+
+      - name: Install dependencies for docs
+        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+
+      - name: Make docs
+        run: julia --project=docs/ docs/make.jl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}

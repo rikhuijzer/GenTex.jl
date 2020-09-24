@@ -5,6 +5,6 @@ using Test
 	# Smoke test.
 	tmpdir = tempname() * '/'
 	mkdir(tmpdir)
-	latex_im!(Equation(raw"$x=1$", 1.0, "inline", ""), tmpdir)
+	latex_im(Equation(raw"$x=1$", 1.0, "inline", ""), tmpdir)
 	rm(tmpdir, recursive=true)
 end

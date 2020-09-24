@@ -1,10 +1,13 @@
+export
+    Equation,
+    substitute_latex
+
 struct Equation
 	text::AbstractString
 	scale::Float64
 	type::String # Either `display` or `inline`.
 	extra_packages::String # For example, \usepackage{tikz}.
 end
-export Equation
 
 struct DisplayImage
 	eq::Equation
@@ -74,15 +77,18 @@ function allranges(hits::Array{UnitRange,1}, s::AbstractString)::Array{UnitRange
 end
 allranges(s::AbstractString) = allranges(hits(s), s)
 
-"""
-Return all regex matches for `regexes` and the strings in between the matches,
-that is, return a list of strings such that a `join` would return `md` again.
-"""
 function splitmd(md::AbstractString)
 	map(range -> SubString(md, range), allranges(md))
 end
-export splitmd
 
+"""
+    substitute_latex(md::AbstractString, scale::Number, im_dir; extra_packages="")
+
+Substitute LaTeX in Markdown string `md`.
+The LaTeX images will be placed at `im_dir/<h>.svg` where `h` is a hash calculated over the math expression.
+The benefit of using a hash is that the browser downloads only one image per math expression.
+Image size can be tweaked by setting `scale`.
+"""
 function substitute_latex(md::AbstractString, scale::Number, im_dir; extra_packages="")
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	cache = load_cache(scale, im_dir)
@@ -102,7 +108,6 @@ function substitute_latex(md::AbstractString, scale::Number, im_dir; extra_packa
 	end
 	join(parts)
 end
-export substitute_latex
 
 function substitute_latex!(frompath, topath; scale=1.6, im_dir="", extra_packages="")::String
 	if im_dir == ""; im_dir = default_im_dir(); end
@@ -115,4 +120,3 @@ function substitute_latex!(frompath, topath; scale=1.6, im_dir="", extra_package
 	end
 	topath
 end
-export substitute_latex!
