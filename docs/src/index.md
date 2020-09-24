@@ -3,13 +3,13 @@
 ## Public methods
 
 ```@autodocs
-Modules = [GenDoc]
+Modules = [GenTeX]
 Private = false
 ```
 
 ## Private methods
 
 ```@autodocs
-Modules = [GenDoc]
+Modules = [GenTeX]
 Public = false
 ```
