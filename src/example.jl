@@ -57,4 +57,3 @@ function show_example!()
 	rm(tmpdir, recursive=true)
 	println("File written - $(Dates.Time(Dates.now()))"[1:end-4])
 end
-export show_example!
