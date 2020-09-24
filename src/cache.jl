@@ -1,6 +1,6 @@
 import Serialization
 
-struct Cache
+mutable struct Cache
 	scale::Number
 	images::Array{Any,1} # Should be a more specific type.
 end
@@ -40,5 +40,7 @@ function check_cache(cache::Cache, eq::Equation)::Union{DisplayImage,InlineImage
 	end
 end
 
-update_cache(cache::Cache, eq_image::Union{DisplayImage,InlineImage})::Cache = 
-	Cache(cache.scale, [cache.images; eq_image])
+function update_cache!(cache::Cache, eq_image::Union{DisplayImage,InlineImage})::Cache
+    cache.images = [cache.images; eq_image]
+    return cache
+end

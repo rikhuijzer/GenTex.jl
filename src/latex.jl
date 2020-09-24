@@ -198,14 +198,13 @@ function determine_param(eq_image)::Array{String,1}
     return params
 end
 
-function _eq!(eq::Equation, im_dir, cache)::Tuple{String,Cache}
+function _eq!(cache, eq::Equation, im_dir)::String
     eq_image = check_cache(cache, eq)
     if eq_image == nothing
         eq_image = latex_im(eq, im_dir)
-        cache = update_cache(cache, eq_image)
+        update_cache!(cache, eq_image)
     end
     param = determine_param(eq_image)
     img = """<img $(join(param, ' '))>"""
     s = eq.type == "display" ? "<center>$(img)</center>" : img
-    (s, cache)
 end

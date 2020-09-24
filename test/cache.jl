@@ -1,7 +1,6 @@
-import GenTeX
+using GenTeX
 using Test
 
-Cache = GenTeX.Cache
 DisplayImage = GenTeX.DisplayImage
 
 @testset "cache" begin
@@ -13,7 +12,7 @@ DisplayImage = GenTeX.DisplayImage
 	eq = Equation(raw"$x$", scale, "inline", "")
 	eq_image = DisplayImage(eq, tmpdir, "hash.svg")
 	@test GenTeX.check_cache(cache, eq) == nothing
-	cache = GenTeX.update_cache(cache, eq_image)
+	GenTeX.update_cache!(cache, eq_image)
 	@test GenTeX.check_cache(cache, eq) == eq_image
 	eq2 = Equation(raw"$x$", scale, "display", "")
 	@test GenTeX.check_cache(cache, eq2) == nothing
@@ -27,6 +26,11 @@ DisplayImage = GenTeX.DisplayImage
 	GenTeX.clear_cache!(tmpdir)
 	cache = GenTeX.load_cache(scale, tmpdir)
 	@test GenTeX.check_cache(cache, eq) == nothing
-
 	rm(tmpdir, recursive=true)
+
+    mkdir(tmpdir)
+    substitute_latex(raw"$x$", scale, tmpdir)
+	cache = GenTeX.load_cache(scale, tmpdir)
+    @test length(cache.images) == 1
+    rm(tmpdir, recursive=true)
 end

@@ -28,10 +28,9 @@ default_im_dir() = joinpath(homedir(), "git", "notes", "static", "latex")
 cache_path(im_dir) = joinpath(im_dir, "cache.txt")
 
 function eq_replace!(cache, eq::SubString, scale, im_dir, extra_packages)::String
-    eq_type = (startswith(eq, raw"$$") || startswith(eq, raw"\[") || startswith(eq, raw"\begin{eq")) ? 
-        "display" : "inline"
-    (new, cache) = _eq!(Equation(eq, scale, eq_type, extra_packages), im_dir, cache)
-    new
+    is_display = (startswith(eq, raw"$$") || startswith(eq, raw"\[") || startswith(eq, raw"\begin{eq")) 
+    eq_type = is_display ? "display" : "inline"
+    _eq!(cache, Equation(eq, scale, eq_type, extra_packages), im_dir)
 end
 
 """
