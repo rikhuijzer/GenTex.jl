@@ -1,7 +1,6 @@
 name = "GenTeX"
 uuid = "986b9465-75d6-44a0-94a2-e5aa8586ae9d"
 authors = ["Rik <t.h.huijzer@rug.nl>"]
-version = "0.3.0"
 version = "1.0.0"
 
 [deps]
