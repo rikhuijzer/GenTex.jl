@@ -60,7 +60,10 @@ latex_regex = r"(?<!\\)    # negative look-behind to make sure start is not esca
         # else group 4 was start, match end equation
         \\end\{equation\}
       )
-    ))))"x
+    ))))| 
+    # Match multi line double dollar symbols.
+    \${2}(?!\$)[\s\S]*?\${2}
+    "x
 
 floatregex = "([0-9]*[.])?[0-9]+"
 match2num(m::RegexMatch) = parse(Float64, match(Regex(floatregex), m.match).match)
