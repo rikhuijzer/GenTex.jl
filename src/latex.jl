@@ -3,6 +3,41 @@ using Dates
 export
     latex_im
 
+# Source: https://stackoverflow.com/questions/14182879.
+latex_regex = r"(?<!\\)    # negative look-behind to make sure start is not escaped 
+    (?:        # start non-capture group for all possible match starts
+      # group 1, match dollar signs only 
+      # single or double dollar sign enforced by look-arounds
+      ((?<!\$)\${1,2}(?!\$))|
+      # group 2, match escaped parenthesis
+      (\\\()|
+      # group 3, match escaped bracket
+      (\\\[)|                 
+      # group 4, match begin equation
+      (\\begin\{equation\})
+    )
+    # if group 1 was start
+    (?(1)
+      # non greedy match everything in between
+      # group 1 matches do not support recursion
+      (.*?)(?<!\\)
+      # match ending double or single dollar signs
+      (?<!\$)\1(?!\$)|  
+    # else
+    (?:
+      # greedily and recursively match everything in between
+      # groups 2, 3 and 4 support recursion
+      (.*(?R)?.*)(?<!\\)
+      (?:
+        # if group 2 was start, escaped parenthesis is end
+        (?(2)\\\)|  
+        # if group 3 was start, escaped bracket is end
+        (?(3)\\\]|     
+        # else group 4 was start, match end equation
+        \\end\{equation\}
+      )
+    ))))"x
+
 floatregex = "([0-9]*[.])?[0-9]+"
 match2num(m::RegexMatch) = parse(Float64, match(Regex(floatregex), m.match).match)
 
@@ -174,8 +209,3 @@ function _eq!(eq::Equation, im_dir, cache)::Tuple{String,Cache}
     s = eq.type == "display" ? "<center>$(img)</center>" : img
     (s, cache)
 end
-
-display_eq!(eq::Equation, im_dir, cache) = _eq!(eq, im_dir, cache)
-export display_eq!
-inline_eq!(eq::Equation, im_dir, cache) = _eq!(eq, im_dir, cache)
-export inline_eq!

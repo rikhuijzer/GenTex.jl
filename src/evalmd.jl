@@ -27,86 +27,32 @@ end
 default_im_dir() = joinpath(homedir(), "git", "notes", "static", "latex")
 cache_path(im_dir) = joinpath(im_dir, "cache.txt")
 
-regexes = Dict(
-	"display" => r"\$\$[\s\S]*?\$\$", # For example, $$ x $$.
-	"inline" => r"(?<!\$)\$(?!\$).{1}.*?\$" # For example, $x$.
-)
-
-"""
-Convert a RegexMatch to its start and stop location in a string.
-"""
-match2range(m::RegexMatch)::UnitRange =
-	m.offset:m.offset + (length(m.match) - 1)
-
-"""
-Obtain a start and stop location for each regex match for `rx`.
-"""
-function ranges(s::AbstractString, rx::Regex)::Array{UnitRange,1} 
-	# map(println, eachmatch(rx, s))
-	map(match2range, eachmatch(rx, s))
+function eq_replace!(cache, eq::SubString, scale, im_dir, extra_packages)::String
+    eq_type = (startswith(eq, raw"$$") || startswith(eq, raw"\[") || startswith(eq, raw"\begin{eq")) ? 
+        "display" : "inline"
+    (new, cache) = _eq!(Equation(eq, scale, eq_type, extra_packages), im_dir, cache)
+    new
 end
 
 """
-Obtain a start and stop location for each regex matches in `regexes`.
-"""
-hits(md::AbstractString)::Array{UnitRange,1} =
-	sort(vcat(map(rx -> ranges(md, rx), last.(collect(regexes)))...))
-
-"""
-Combine the start and stop locations for regex matches with the ranges in between,
-that is, ensure that each position in the string is contained in a range.
-"""
-function allranges(hits::Array{UnitRange,1}, s::AbstractString)::Array{UnitRange,1}
-	if length(hits) == 0
-		return [1:length(s)]
-	end
-	before = 0
-	pushfirst!(hits, before:before)
-	after = length(s) + 1
-	push!(hits, after:after)
-	between(i) = hits[i-1].stop+1:hits[i].start-1 
-	betweens::Array{UnitRange,1} = map(between, 2:length(hits))
-	if betweens[1].stop == before
-		betweens = betweens[2:end]
-	end
-	if betweens[end].start == after
-		betweens = betweens[1:end-1]
-	end
-	hits = hits[2:end-1]
-	sort(vcat(hits, betweens))
-end
-allranges(s::AbstractString) = allranges(hits(s), s)
-
-function splitmd(md::AbstractString)
-	map(range -> SubString(md, range), allranges(md))
-end
-
-"""
-    substitute_latex(md::AbstractString, scale::Number, im_dir; extra_packages="")
+    substitute_latex(md::AbstractString, scale::Number, im_dir; extra_packages="")::String
 
 Substitute LaTeX in Markdown string `md`.
 The LaTeX images will be placed at `im_dir/<h>.svg` where `h` is a hash calculated over the math expression.
 The benefit of using a hash is that the browser downloads only one image per math expression.
 Image size can be tweaked by setting `scale`.
 """
-function substitute_latex(md::AbstractString, scale::Number, im_dir; extra_packages="")
+function substitute_latex(md::AbstractString, scale::Number, im_dir; extra_packages="")::String
 	if !(isdir(im_dir)); mkdir(im_dir) end
 	cache = load_cache(scale, im_dir)
-	initial_length = length(cache.images)
-	parts = splitmd(md)
-	for (i, part) in enumerate(parts)
-		if startswith(part, raw"$$")	
-			(parts[i], cache) = 
-				display_eq!(Equation(part, scale, "display", extra_packages), im_dir, cache)
-		elseif startswith(part, raw"$")
-			(parts[i], cache) = 
-				inline_eq!(Equation(part, scale, "inline", extra_packages), im_dir, cache)
-		end
-	end
-	if length(cache.images) != initial_length
+	initial_cache_length = length(cache.images)
+
+    md = replace(md, latex_regex => m -> eq_replace!(cache, m, scale, im_dir, extra_packages))
+
+	if length(cache.images) != initial_cache_length
 		write_cache!(cache, im_dir)
 	end
-	join(parts)
+	md
 end
 
 function substitute_latex!(frompath, topath; scale=1.6, im_dir="", extra_packages="")::String

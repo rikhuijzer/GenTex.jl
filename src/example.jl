@@ -35,7 +35,7 @@ function example_text()
 		\usepackage{tikz}
 		\usetikzlibrary{arrows}"""
 	eq = Equation(tikz, 1.6, "display", extra_packages)
-	(html, cache) = display_eq!(eq, default_im_dir(), new_cache())
+	(html, cache) = _eq!(eq, default_im_dir(), new_cache())
 
 	return embedded_latex * html
 end
