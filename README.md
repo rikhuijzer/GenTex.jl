@@ -7,22 +7,23 @@
 </h3>
 
 
-This project is similar to, and based on, <https://github.com/liamoc/latex-formulae>.
 Benefits of rendering LaTeX to images are to
 
 - avoid JavaScript on the client-side and
-- allow full LaTeX capabilities (for example, the `tikz` package).
+- allow full LaTeX capabilities, such as using the `tikz` package.
 
-Generating LaTeX images can easily take a few minutes.
+Generating LaTeX images is slow.
 Therefore, this project implements a file-based cache.
 This is useful for local development and for building via GitHub workflows.
 
 ## Demo
 
-My personal website uses this package to generate the LaTeX images. 
+My blog uses this package.
 For example, see
 
 - https://huijzer.xyz/posts/correlations for some math or
 - https://huijzer.xyz/about-site/ for a Tikz picture.
 
-The site's source code is at <https://github.com/rikhuijzer/site>.
+The source code is at <https://github.com/rikhuijzer/site>.
+
+For a simple example, see the [documentation](https://rikhuijzer.github.io/GenTeX.jl/dev/).
