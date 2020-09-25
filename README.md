@@ -3,14 +3,14 @@
 </h1>
 
 <h3 align="center">
-  Generate LaTeX images for websites
+  Generate LaTeX images
 </h3>
 
-
+This is a wrapper around `pdflatex`, `pdfcrop` and `dvisvgm` (to obtain SVG images).
 Benefits of rendering LaTeX to images are to
 
-- avoid JavaScript on the client-side and
-- allow full LaTeX capabilities, such as using the `tikz` package.
+- allow full LaTeX capabilities, such as using the `tikz` package and
+- avoid JavaScript on the client-side.
 
 Generating LaTeX images is slow.
 Therefore, this project implements a in-memory cache which is also stored to disk.
