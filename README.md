@@ -49,7 +49,7 @@ For a simple example, see the [documentation](https://rikhuijzer.github.io/GenTe
 
 The full LaTeX syntax is supported since the math expressions are passed into `pdflatex`.
 However, it is quite tricky to detect which parts of a string need to be interpreted as LaTeX.
-A regular expression is used which can detect at least the following expressions:
+A regular expression is used; it can detect at least the following LaTeX expressions.
 
 ```jl
 text = raw"""
@@ -75,11 +75,13 @@ text = raw"""
   """
 ```
 
-To combine LaTeX with Julia's string interpolation, avoid using a raw string.
+When you want to combine LaTeX with Julia's string interpolation, you cannot use a raw string.
 The shortest is then to use `\$` for inline math and `\\[` for display math.
 
 ```jl
 "
+1 + 1 = $(1 + 1)
+since
 \$ex\$
 and
 \\[
