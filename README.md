@@ -18,7 +18,6 @@ This is useful for speeding up local development and GitHub workflows.
 
 ## Installation
 
-You can obtain GenTeX using Julia's Pkg REPL-mode (hitting ] as the first character of the command prompt):
 In the Julia REPL, GenTeX can be installed by hitting `]` to enter the Pkg mode:
 
 ```
