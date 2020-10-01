@@ -6,7 +6,7 @@
   Generate LaTeX images
 </h3>
 
-This is a wrapper around `pdflatex`, `pdfcrop` and `dvisvgm` (to obtain SVG images).
+This is a wrapper around `pdflatex`, `pdfcrop` and `dvisvgm` (to obtain SVG images) and is based on [latex-formulae](https://github.com/liamoc/latex-formulae).
 Benefits of rendering LaTeX to images are to
 
 - allow full LaTeX capabilities, such as using TikZ and
@@ -89,3 +89,11 @@ and
 \\]
 "
 ```
+
+## Licenses
+
+This package is MIT licensed since it seems to be the default for Julia packages.
+
+**External:**
+
+- This project is loosely based on [latex-formulae](https://github.com/liamoc/latex-formulae/blob/master/LICENSE)
