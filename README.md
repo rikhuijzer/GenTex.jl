@@ -13,6 +13,8 @@ Alternatives:
 - for pre-rendering LaTeX without using LaTeX but with excellent output, see [Franklin.jl](https://github.com/tlienart/Franklin.jl)
 - for inserting Tikz, see [TikzPictures](https://github.com/JuliaTeX/TikzPictures.jl)
 
+The package has not been removed from the Julia Registries, because [that is not possible](https://github.com/JuliaRegistries/General).
+
 This is a wrapper around `pdflatex`, `pdfcrop` and `dvisvgm` (to obtain SVG images) and is based on [latex-formulae](https://github.com/liamoc/latex-formulae).
 Benefits of rendering LaTeX to images are to
 
