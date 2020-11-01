@@ -1,6 +1,7 @@
 # GenTeX.jl
 
-The most important function is `substitute_latex`.
+For most situations, I would advise to use [Franklin.jl](https://github.com/tlienart/Franklin.jl) which has great build in support for pre-rendering LaTeX equations.
+If you want to use real LaTeX, then the most important function is `substitute_latex`.
 
 ```@docs
 substitute_latex
@@ -22,8 +23,3 @@ md = substitute_latex(raw"$u$ and $v$", 1, tmpdir)
 rm(tmpdir, recursive=true)
 md
 ```
-
-## Full example
-
-For a more complete example with proper alignment and scaling, see <https://huijzer.xyz/posts/correlations>.
-The source code is available at <https://github.com/rikhuijzer/site>.

@@ -16,6 +16,8 @@ Generating LaTeX images is slow.
 Therefore, this project implements a in-memory cache which is also stored to disk.
 This is useful for speeding up local development and GitHub workflows.
 
+For most use-cases, I would advise [Franklin.jl](https://github.com/tlienart/Franklin.jl).
+
 ## Installation
 
 In the Julia REPL, GenTeX can be installed by hitting `]` to enter the Pkg mode:
@@ -23,27 +25,14 @@ In the Julia REPL, GenTeX can be installed by hitting `]` to enter the Pkg mode:
 ```
 julia> ]
 
-(v1.0) pkg> add GenTeX
+pkg> add GenTeX
 ```
 
 Alternatively, use 
 ```
-using Pkg 
-
+using Pkg
 Pkg.add("GenTeX")
 ```
-
-## Demo
-
-My blog uses this package.
-For example, see
-
-- https://huijzer.xyz/posts/correlations for some math or
-- https://huijzer.xyz/about-site/ for a TikZ picture.
-
-The source code is at <https://github.com/rikhuijzer/site>.
-
-For a simple example, see the [documentation](https://rikhuijzer.github.io/GenTeX.jl/dev/).
 
 ## Syntax
 
