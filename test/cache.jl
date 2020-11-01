@@ -9,14 +9,16 @@ DisplayImage = GenTeX.DisplayImage
 
 	scale = 1.0
 	cache = GenTeX.load_cache(scale, tmpdir)
-	eq = GenTeX.Equation(raw"$x$", scale, "inline", "")
+    text = raw"$x$"
+    hash_text = string(hash(text))
+	eq = GenTeX.Equation(text, scale, "inline", "", hash_text)
 	eq_image = DisplayImage(eq, tmpdir, "hash.svg")
 	@test GenTeX.check_cache(cache, eq) == nothing
 	GenTeX.update_cache!(cache, eq_image)
 	@test GenTeX.check_cache(cache, eq) == eq_image
-	eq2 = GenTeX.Equation(raw"$x$", scale, "display", "")
+	eq2 = GenTeX.Equation(text, scale, "display", "", hash_text)
 	@test GenTeX.check_cache(cache, eq2) == nothing
-	eq3 = GenTeX.Equation(raw"$x$", scale, "inline", "")
+	eq3 = GenTeX.Equation(text, scale, "inline", "", hash_text)
 	@test GenTeX.check_cache(cache, eq3) == eq_image
 	
 	GenTeX.write_cache!(cache, tmpdir)

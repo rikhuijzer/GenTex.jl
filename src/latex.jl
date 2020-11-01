@@ -8,6 +8,7 @@ struct Equation
 	scale::Float64
 	type::String # Either `display` or `inline`.
 	extra_packages::String # For example, \usepackage{tikz}.
+    filename::String # Output filename without extension.
 end
 
 struct DisplayImage
@@ -174,7 +175,7 @@ function latex_im(eq::Equation, im_dir::String)::Union{DisplayImage,InlineImage}
     end
     mv(file("crop"), file("svg"))
     tmpfilename = split(tmpdir, '/')[end-1]
-    im_name = "$(hash(eq.text)).svg"
+    im_name = eq.filename * ".svg"
     im_path = joinpath(im_dir, im_name)
     mv(file("svg"), im_path, force=true)
     cd(old_pwd)
@@ -235,7 +236,7 @@ end
 function eq_replace!(cache, eq::SubString, scale, im_dir, extra_packages)::String
     is_display = (startswith(eq, raw"$$") || startswith(eq, raw"\[") || startswith(eq, raw"\begin{eq")) 
     eq_type = is_display ? "display" : "inline"
-    _eq!(cache, Equation(eq, scale, eq_type, extra_packages), im_dir)
+    _eq!(cache, Equation(eq, scale, eq_type, extra_packages, string(hash(eq))), im_dir)
 end
 
 """
