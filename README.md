@@ -6,6 +6,13 @@
   Generate LaTeX images
 </h3>
 
+**This project is deprecated**, because the exact baseline of the SVG images was hard to determine causing the equations not to be aligned properly with the rest of the text and because adding LaTeX to a CI build will cause the build to be much longer.
+Also, cross-references were not supported yet.
+Alternatives:
+
+- for pre-rendering LaTeX without using LaTeX but with excellent output, see [Franklin.jl](https://github.com/tlienart/Franklin.jl)
+- for inserting Tikz, see [TikzPictures](https://github.com/JuliaTeX/TikzPictures.jl)
+
 This is a wrapper around `pdflatex`, `pdfcrop` and `dvisvgm` (to obtain SVG images) and is based on [latex-formulae](https://github.com/liamoc/latex-formulae).
 Benefits of rendering LaTeX to images are to
 
@@ -16,7 +23,7 @@ Generating LaTeX images is slow.
 Therefore, this project implements a in-memory cache which is also stored to disk.
 This is useful for speeding up local development and GitHub workflows.
 
-For most use-cases, I would advise [Franklin.jl](https://github.com/tlienart/Franklin.jl).
+For most use-cases, I would advise
 
 ## Installation
 
